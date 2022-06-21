@@ -1,23 +1,15 @@
-package ru.nsu.fit.kolesnik.notrealroyale.model;
+package ru.nsu.fit.kolesnik.notrealroyale.model.worldmap;
 
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Chest;
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Wall;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class WorldMap {
     private int width;
     private int height;
 
-    private final List<Wall> walls;
-    private final List<Chest> chests;
-
-    public WorldMap() {
-        walls = new ArrayList<>();
-        chests = new ArrayList<>();
-    }
+    Tile[][] tiles;
 
     public void loadMap(String mapName) {
         try {
@@ -40,6 +32,7 @@ public class WorldMap {
             if (height <= 0) {
                 throw new RuntimeException("Invalid map file format!");
             }
+            tiles = new Tile[height][width];
             String mapLine = bufferedReader.readLine();
             int y = 0;
             while (mapLine != null && y < height) {
@@ -48,12 +41,12 @@ public class WorldMap {
                 }
                 for (int x = 0; x < mapLine.length(); x++) {
                     if (mapLine.charAt(x) == '#') {
-                        Wall wall = new Wall(x, y);
-                        walls.add(wall);
-                    } else if (mapLine.charAt(x) == '$') {
-                        Chest chest = new Chest(x, y);
-                        chests.add(chest);
-                    } else if (mapLine.charAt(x) != '.') {
+                        tiles[y][x] = Tile.WALL;
+                    } else if (mapLine.charAt(x) == '&') {
+                        tiles[y][x] = Tile.ROCK;
+                    } else if (mapLine.charAt(x) == '.') {
+                        tiles[y][x] = Tile.GRASS;
+                    } else {
                         throw new RuntimeException("Invalid map file format!");
                     }
                 }
@@ -66,19 +59,15 @@ public class WorldMap {
         }
     }
 
-    public List<Wall> getWalls() {
-        return walls;
-    }
-
-    public List<Chest> getChests() {
-        return chests;
-    }
-
     public int getWidth() {
         return width;
     }
 
     public int getHeight() {
         return height;
+    }
+
+    public Tile getTile(int tileX, int tileY) {
+        return tiles[tileY][tileX];
     }
 }

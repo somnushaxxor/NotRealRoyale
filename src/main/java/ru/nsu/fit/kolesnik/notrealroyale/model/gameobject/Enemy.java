@@ -1,4 +1,4 @@
-package ru.nsu.fit.kolesnik.notrealroyale;
+package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
 import javafx.geometry.Point2D;
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.ActiveObject;
@@ -7,12 +7,14 @@ import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Player;
 import java.util.List;
 
 public class Enemy extends ActiveObject {
-    public final static double DEFAULT_VELOCITY = 0.05;
-    public final static int DEFAULT_WIDTH = 1;
-    public final static int DEFAULT_HEIGHT = 1;
+    private final static double DEFAULT_VELOCITY = 0.05;
+    private final static int DEFAULT_WIDTH = 1;
+    private final static int DEFAULT_HEIGHT = 1;
+    private final static double DEFAULT_COLLIDABLE_RECT_PADDING_X = 0.1;
+    private final static double DEFAULT_COLLIDABLE_RECT_PADDING_Y = 0.1;
 
     public Enemy(double x, double y) {
-        super(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_VELOCITY);
+        super(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_COLLIDABLE_RECT_PADDING_X, DEFAULT_COLLIDABLE_RECT_PADDING_Y, DEFAULT_VELOCITY);
     }
 
     public void moveTowardsNearestPlayer(List<Player> playerList) {

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class DefaultGameController implements GameController {
     private final GameModel entity;
-    private UUID playerId;
+    private UUID clientPlayerId;
 
     public DefaultGameController(GameModel entity) {
         this.entity = entity;
@@ -16,20 +16,20 @@ public class DefaultGameController implements GameController {
     @Override
     public void onKeyPressed(Key key) {
         switch (key) {
-            case W -> entity.movePlayerByDirection(Direction.UP, playerId);
-            case S -> entity.movePlayerByDirection(Direction.DOWN, playerId);
-            case A -> entity.movePlayerByDirection(Direction.LEFT, playerId);
-            case D -> entity.movePlayerByDirection(Direction.RIGHT, playerId);
+            case W -> entity.movePlayerByDirection(Direction.UP, clientPlayerId);
+            case S -> entity.movePlayerByDirection(Direction.DOWN, clientPlayerId);
+            case A -> entity.movePlayerByDirection(Direction.LEFT, clientPlayerId);
+            case D -> entity.movePlayerByDirection(Direction.RIGHT, clientPlayerId);
         }
     }
 
     @Override
-    public void setPlayerId(UUID playerId) {
-        this.playerId = playerId;
+    public void setClientPlayerId(UUID clientPlayerId) {
+        this.clientPlayerId = clientPlayerId;
     }
 
     @Override
     public void onMouseClicked(double mouseX, double mouseY) {
-        entity.shoot(mouseX, mouseY, playerId);
+        entity.shoot(mouseX, mouseY, clientPlayerId);
     }
 }

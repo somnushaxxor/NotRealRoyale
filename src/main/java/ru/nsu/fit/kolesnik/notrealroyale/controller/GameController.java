@@ -6,7 +6,7 @@ public interface GameController {
 
     void onKeyPressed(Key key);
 
-    void setPlayerId(UUID playerId);
+    void setClientPlayerId(UUID clientPlayerId);
 
     void onMouseClicked(double mouseX, double mouseY);
 }

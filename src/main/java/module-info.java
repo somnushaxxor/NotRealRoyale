@@ -22,4 +22,6 @@ module ru.nsu.fit.kolesnik.notrealroyale {
     opens ru.nsu.fit.kolesnik.notrealroyale.view to javafx.fxml;
     exports ru.nsu.fit.kolesnik.notrealroyale.view.javafx;
     opens ru.nsu.fit.kolesnik.notrealroyale.view.javafx to javafx.fxml;
+    exports ru.nsu.fit.kolesnik.notrealroyale.model.worldmap;
+    opens ru.nsu.fit.kolesnik.notrealroyale.model.worldmap to javafx.fxml;
 }

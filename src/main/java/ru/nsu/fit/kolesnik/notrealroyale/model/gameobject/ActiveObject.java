@@ -4,8 +4,8 @@ public class ActiveObject extends GameObject {
     private final double velocity;
     private boolean alive;
 
-    public ActiveObject(double x, double y, double width, double height, double velocity) {
-        super(x, y, width, height);
+    public ActiveObject(double x, double y, double width, double height, double collidableRectPaddingX, double collidableRectPaddingY, double velocity) {
+        super(x, y, width, height, collidableRectPaddingX, collidableRectPaddingY);
         this.velocity = velocity;
         alive = true;
     }
