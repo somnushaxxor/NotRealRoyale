@@ -22,12 +22,12 @@ public class KeyHandler {
         GameController controller = view.getController();
         scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
         scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
-//        scene.setOnMouseClicked(
-//                event -> {
-//                    double mouseX = event.getX() - view.getScene().getWidth() / 2;
-//                    double mouseY = event.getY() - view.getScene().getHeight() / 2;
-//                    controller.onMouseClicked(mouseX, mouseY);
-//                });
+        scene.setOnMouseClicked(
+                event -> {
+                    double mouseX = event.getX() - view.getScene().getWidth() / 2;
+                    double mouseY = event.getY() - view.getScene().getHeight() / 2;
+                    controller.onMouseClicked(mouseX, mouseY);
+                });
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {

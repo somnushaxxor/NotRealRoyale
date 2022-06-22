@@ -3,9 +3,9 @@ package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 public class Bullet extends ActiveObject {
     private final static double DEFAULT_WIDTH = 1;
     private final static double DEFAULT_HEIGHT = 1;
-    private final static double DEFAULT_RANGE = 30;
-    private final static double DEFAULT_VELOCITY = 1;
-    private final static double DEFAULT_COLLIDABLE_RECT_PADDING_X = 0.25;
+    private final static double DEFAULT_RANGE = 15;
+    private final static double DEFAULT_VELOCITY = 0.25;
+    private final static double DEFAULT_COLLIDABLE_RECT_PADDING_X = 0.30;
     private final static double DEFAULT_COLLIDABLE_RECT_PADDING_Y = 0.25;
 
     private double range;

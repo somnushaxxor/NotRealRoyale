@@ -9,6 +9,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import ru.nsu.fit.kolesnik.notrealroyale.controller.GameController;
 import ru.nsu.fit.kolesnik.notrealroyale.model.GameModel;
+import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Bullet;
+import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Chest;
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Player;
 import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.Tile;
 import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.WorldMap;
@@ -36,9 +38,12 @@ public class GraphicGameView implements GameView {
 
     Image backgroundImage = new Image("background.jpg");
     Image playerImage = new Image("duck.png");
-    Image grassImage = new Image("grass.png");
+    Image sandImage = new Image("sand.png");
     Image wallImage = new Image("wall.png");
     Image rockImage = new Image("rock.png");
+    Image cactusImage = new Image("cactus.png");
+    Image bulletImage = new Image("bullet.png");
+    Image chestImage = new Image("chest.png");
 
     public GraphicGameView(GameModel gameModel, GameController controller, Group root, Scene scene) {
         this.gameModel = gameModel;
@@ -69,20 +74,13 @@ public class GraphicGameView implements GameView {
                 clientPlayerId = UUID.fromString(eventStringSplitted[1]);
                 controller.setClientPlayerId(clientPlayerId);
             } else if (eventStringSplitted[0].equals("GAME_UPDATED")) {
-                drawBackground();
                 Player clientPlayer = gameModel.getPlayerById(clientPlayerId);
                 cameraX = clientPlayer.getX();
                 cameraY = clientPlayer.getY();
-                double horizontalVisibleTilesPadding = (GAME_WINDOW_WIDTH - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
-                double verticalVisibleTilesPadding = (GAME_WINDOW_HEIGHT - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
-                WorldMap worldMap = gameModel.getWorldMap();
-                for (int y = 0; y < worldMap.getHeight(); y++) {
-                    for (int x = 0; x < worldMap.getWidth(); x++) {
-                        if (x > cameraX - horizontalVisibleTilesPadding - 1 && x < cameraX + horizontalVisibleTilesPadding && y > cameraY - verticalVisibleTilesPadding - 1 && y < cameraY + verticalVisibleTilesPadding) {
-                            drawTile(worldMap.getTile(x, y), x, y);
-                        }
-                    }
-                }
+                drawBackground();
+                drawVisibleTiles();
+                drawBullets();
+                drawChests();
                 drawPlayers();
             }
         });
@@ -92,14 +90,29 @@ public class GraphicGameView implements GameView {
         graphicsContext.drawImage(backgroundImage, 0, 0);
     }
 
+    private void drawVisibleTiles() {
+        double horizontalVisibleTilesPadding = (GAME_WINDOW_WIDTH - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
+        double verticalVisibleTilesPadding = (GAME_WINDOW_HEIGHT - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
+        WorldMap worldMap = gameModel.getWorldMap();
+        for (int y = 0; y < worldMap.getHeight(); y++) {
+            for (int x = 0; x < worldMap.getWidth(); x++) {
+                if (x > cameraX - horizontalVisibleTilesPadding - 1 && x < cameraX + horizontalVisibleTilesPadding && y > cameraY - verticalVisibleTilesPadding - 1 && y < cameraY + verticalVisibleTilesPadding) {
+                    drawTile(worldMap.getTile(x, y), x, y);
+                }
+            }
+        }
+    }
+
     private void drawTile(Tile tile, int tileX, int tileY) {
         Image tileImage = null;
-        if (tile == Tile.GRASS) {
-            tileImage = grassImage;
+        if (tile == Tile.SAND) {
+            tileImage = sandImage;
         } else if (tile == Tile.WALL) {
             tileImage = wallImage;
         } else if (tile == Tile.ROCK) {
             tileImage = rockImage;
+        } else if (tile == Tile.CACTUS) {
+            tileImage = cactusImage;
         }
         graphicsContext.drawImage(tileImage, getGameObjectScreenX(tileX), getGameObjectScreenY(tileY));
     }
@@ -109,6 +122,26 @@ public class GraphicGameView implements GameView {
             double playerX = player.getX();
             double playerY = player.getY();
             graphicsContext.drawImage(playerImage, getGameObjectScreenX(playerX), getGameObjectScreenY(playerY));
+        }
+    }
+
+    private void drawBullets() {
+        for (Bullet bullet : gameModel.getBullets()) {
+            double bulletX = bullet.getX();
+            double bulletY = bullet.getY();
+            graphicsContext.drawImage(bulletImage, getGameObjectScreenX(bulletX), getGameObjectScreenY(bulletY));
+        }
+    }
+
+    private void drawChests() {
+        double horizontalVisibleTilesPadding = (GAME_WINDOW_WIDTH - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
+        double verticalVisibleTilesPadding = (GAME_WINDOW_HEIGHT - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
+        for (Chest chest : gameModel.getWorldMap().getChests()) {
+            double chestX = chest.getX();
+            double chestY = chest.getY();
+            if (chestX > cameraX - horizontalVisibleTilesPadding - 1 && chestX < cameraX + horizontalVisibleTilesPadding && chestY > cameraY - verticalVisibleTilesPadding - 1 && chestY < cameraY + verticalVisibleTilesPadding) {
+                graphicsContext.drawImage(chestImage, getGameObjectScreenX(chestX), getGameObjectScreenY(chestY));
+            }
         }
     }
 

@@ -1,9 +1,8 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
-import java.io.Serializable;
 import java.util.UUID;
 
-public class GameObject implements Serializable {
+public class GameObject {
     private double x;
     private double y;
     private final double width;

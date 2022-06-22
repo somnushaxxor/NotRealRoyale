@@ -31,17 +31,4 @@ public class ActiveObject extends GameObject {
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
-
-    public boolean isColliding(GameObject other) {
-        if (this == other) {
-            return false;
-        }
-        if (getX() < other.getX() + other.getWidth() &&
-                getX() + getWidth() > other.getX() &&
-                getY() < other.getY() + other.getHeight() &&
-                getY() + getHeight() > other.getY()) {
-            return true;
-        }
-        return false;
-    }
 }

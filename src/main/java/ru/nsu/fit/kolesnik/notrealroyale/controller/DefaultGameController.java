@@ -6,20 +6,20 @@ import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Direction;
 import java.util.UUID;
 
 public class DefaultGameController implements GameController {
-    private final GameModel entity;
+    private final GameModel gameModel;
     private UUID clientPlayerId;
 
-    public DefaultGameController(GameModel entity) {
-        this.entity = entity;
+    public DefaultGameController(GameModel gameModel) {
+        this.gameModel = gameModel;
     }
 
     @Override
     public void onKeyPressed(Key key) {
         switch (key) {
-            case W -> entity.movePlayerByDirection(Direction.UP, clientPlayerId);
-            case S -> entity.movePlayerByDirection(Direction.DOWN, clientPlayerId);
-            case A -> entity.movePlayerByDirection(Direction.LEFT, clientPlayerId);
-            case D -> entity.movePlayerByDirection(Direction.RIGHT, clientPlayerId);
+            case W -> gameModel.movePlayerByDirection(Direction.UP, clientPlayerId);
+            case S -> gameModel.movePlayerByDirection(Direction.DOWN, clientPlayerId);
+            case A -> gameModel.movePlayerByDirection(Direction.LEFT, clientPlayerId);
+            case D -> gameModel.movePlayerByDirection(Direction.RIGHT, clientPlayerId);
         }
     }
 
@@ -30,6 +30,6 @@ public class DefaultGameController implements GameController {
 
     @Override
     public void onMouseClicked(double mouseX, double mouseY) {
-        entity.shoot(mouseX, mouseY, clientPlayerId);
+        gameModel.shoot(mouseX, mouseY, clientPlayerId);
     }
 }

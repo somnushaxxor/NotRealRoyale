@@ -43,6 +43,30 @@ public class GameModel {
     }
 
     private void update() {
+        for (Bullet bullet : bullets) {
+            bullet.update();
+            boolean isBulletCollided = false;
+            int bulletOccupiedTileX1 = (int) Math.floor(bullet.getX() + bullet.getCollidableRectPaddingX());
+            int bulletOccupiedTileX2 = (int) Math.floor(bullet.getX() + 1 - bullet.getCollidableRectPaddingX());
+            int bulletOccupiedTileY1 = (int) Math.floor(bullet.getY() + bullet.getCollidableRectPaddingY());
+            int bulletOccupiedTileY2 = (int) Math.floor(bullet.getY() + 1 - bullet.getCollidableRectPaddingY());
+            if (worldMap.getTile(bulletOccupiedTileX1, bulletOccupiedTileY1).isCollidable() || worldMap.getTile(bulletOccupiedTileX1, bulletOccupiedTileY2).isCollidable() || worldMap.getTile(bulletOccupiedTileX2, bulletOccupiedTileY1).isCollidable() || worldMap.getTile(bulletOccupiedTileX2, bulletOccupiedTileY2).isCollidable()) {
+                isBulletCollided = true;
+            } else {
+                for (Chest chest : worldMap.getChests()) {
+                    if ((chest.getX() == bulletOccupiedTileX1 || chest.getX() == bulletOccupiedTileX2) && (chest.getY() == bulletOccupiedTileY1 || chest.getY() == bulletOccupiedTileY2)) {
+                        chest.receiveDamage(bullet.getDamage());
+                        isBulletCollided = true;
+                        break;
+                    }
+                }
+            }
+            if (isBulletCollided) {
+                bullet.setAlive(false);
+            }
+        }
+        bullets.removeIf(bullet -> (!bullet.isAlive()));
+        worldMap.getChests().removeIf(chest -> (!chest.isAlive()));
         notifyAllSubscribers("GAME_UPDATED");
     }
 
@@ -63,57 +87,67 @@ public class GameModel {
     public void movePlayerByDirection(Direction direction, UUID playerId) {
         Player player = getPlayerById(playerId);
 
-        // map borders collision
-//        if (direction == Direction.UP) {
-//            if (0 > player.getY() - playersVelocity) {
-//                steps = player.getY();
-//            }
-//        } else if (direction == Direction.DOWN) {
-//            if (worldMap.getHeight() < player.getY() + player.getHeight() + playersVelocity) {
-//                steps = worldMap.getHeight() - player.getY() - player.getHeight();
-//            }
-//        } else if (direction == Direction.LEFT) {
-//            if (0 > player.getX() - playersVelocity) {
-//                steps = player.getX();
-//            }
-//        } else if (direction == Direction.RIGHT) {
-//            if (worldMap.getWidth() < player.getX() + player.getWidth() + playersVelocity) {
-//                steps = worldMap.getWidth() - player.getX() - player.getWidth();
-//            }
-//        }
-
-        boolean availableMove = true;
+        boolean isMoveAvailable = true;
 
         if (direction == Direction.UP) {
             int playerTopTilesY = (int) (Math.floor(player.getY() - player.getVelocity() + player.getCollidableRectPaddingY()));
             int playerOccupiedTile1 = (int) Math.floor(player.getX() + player.getCollidableRectPaddingX());
             int playerOccupiedTile2 = (int) Math.floor(player.getX() + 1 - player.getCollidableRectPaddingX());
             if (worldMap.getTile(playerOccupiedTile1, playerTopTilesY).isCollidable() || worldMap.getTile(playerOccupiedTile2, playerTopTilesY).isCollidable()) {
-                availableMove = false;
+                isMoveAvailable = false;
+            } else {
+                for (Chest chest : worldMap.getChests()) {
+                    if ((chest.getX() == playerOccupiedTile1 || chest.getX() == playerOccupiedTile2) && chest.getY() == playerTopTilesY) {
+                        isMoveAvailable = false;
+                        break;
+                    }
+                }
             }
         } else if (direction == Direction.DOWN) {
             int playerBottomTilesY = (int) (Math.floor(player.getY() + 1 + player.getVelocity() - player.getCollidableRectPaddingY()));
             int playerOccupiedTile1 = (int) Math.floor(player.getX() + player.getCollidableRectPaddingX());
             int playerOccupiedTile2 = (int) Math.floor(player.getX() + 1 - player.getCollidableRectPaddingX());
             if (worldMap.getTile(playerOccupiedTile1, playerBottomTilesY).isCollidable() || worldMap.getTile(playerOccupiedTile2, playerBottomTilesY).isCollidable()) {
-                availableMove = false;
+                isMoveAvailable = false;
+            } else {
+                for (Chest chest : worldMap.getChests()) {
+                    if ((chest.getX() == playerOccupiedTile1 || chest.getX() == playerOccupiedTile2) && chest.getY() == playerBottomTilesY) {
+                        isMoveAvailable = false;
+                        break;
+                    }
+                }
             }
         } else if (direction == Direction.LEFT) {
             int playerLeftTilesX = (int) (Math.floor(player.getX() - player.getVelocity() + player.getCollidableRectPaddingX()));
             int playerOccupiedTile1 = (int) Math.floor(player.getY() + player.getCollidableRectPaddingY());
             int playerOccupiedTile2 = (int) Math.floor(player.getY() + 1 - player.getCollidableRectPaddingY());
             if (worldMap.getTile(playerLeftTilesX, playerOccupiedTile1).isCollidable() || worldMap.getTile(playerLeftTilesX, playerOccupiedTile2).isCollidable()) {
-                availableMove = false;
+                isMoveAvailable = false;
+            } else {
+                for (Chest chest : worldMap.getChests()) {
+                    if (chest.getX() == playerLeftTilesX && (chest.getY() == playerOccupiedTile1 || chest.getY() == playerOccupiedTile2)) {
+                        isMoveAvailable = false;
+                        break;
+                    }
+                }
             }
         } else if (direction == Direction.RIGHT) {
             int playerRightTilesX = (int) (Math.floor(player.getX() + 1 + player.getVelocity() - player.getCollidableRectPaddingX()));
             int playerOccupiedTile1 = (int) Math.floor(player.getY() + player.getCollidableRectPaddingY());
             int playerOccupiedTile2 = (int) Math.floor(player.getY() + 1 - player.getCollidableRectPaddingY());
             if (worldMap.getTile(playerRightTilesX, playerOccupiedTile1).isCollidable() || worldMap.getTile(playerRightTilesX, playerOccupiedTile2).isCollidable()) {
-                availableMove = false;
+                isMoveAvailable = false;
+            } else {
+                for (Chest chest : worldMap.getChests()) {
+                    if (chest.getX() == playerRightTilesX && (chest.getY() == playerOccupiedTile1 || chest.getY() == playerOccupiedTile2)) {
+                        isMoveAvailable = false;
+                        break;
+                    }
+                }
             }
         }
-        if (availableMove) {
+
+        if (isMoveAvailable) {
             player.moveByDirection(direction);
         }
     }

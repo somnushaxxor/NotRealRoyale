@@ -1,15 +1,24 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.worldmap;
 
+import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Chest;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorldMap {
     private int width;
     private int height;
 
-    Tile[][] tiles;
+    private Tile[][] tiles;
+    private final List<Chest> chests;
+
+    public WorldMap() {
+        chests = new ArrayList<>();
+    }
 
     public void loadMap(String mapName) {
         try {
@@ -44,8 +53,14 @@ public class WorldMap {
                         tiles[y][x] = Tile.WALL;
                     } else if (mapLine.charAt(x) == '&') {
                         tiles[y][x] = Tile.ROCK;
+                    } else if (mapLine.charAt(x) == '!') {
+                        tiles[y][x] = Tile.CACTUS;
                     } else if (mapLine.charAt(x) == '.') {
-                        tiles[y][x] = Tile.GRASS;
+                        tiles[y][x] = Tile.SAND;
+                        if (Math.random() < 0.005) {
+                            Chest chest = new Chest(x, y);
+                            chests.add(chest);
+                        }
                     } else {
                         throw new RuntimeException("Invalid map file format!");
                     }
@@ -69,5 +84,9 @@ public class WorldMap {
 
     public Tile getTile(int tileX, int tileY) {
         return tiles[tileY][tileX];
+    }
+
+    public List<Chest> getChests() {
+        return chests;
     }
 }

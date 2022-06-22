@@ -1,7 +1,7 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.worldmap;
 
 public enum Tile {
-    GRASS(false), WALL(true), ROCK(true);
+    SAND(false), WALL(true), ROCK(true), CACTUS(true);
 
     private final boolean collidable;
 
