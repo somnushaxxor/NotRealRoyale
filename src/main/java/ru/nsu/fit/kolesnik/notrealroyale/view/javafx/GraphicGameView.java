@@ -9,9 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import ru.nsu.fit.kolesnik.notrealroyale.controller.GameController;
 import ru.nsu.fit.kolesnik.notrealroyale.model.GameModel;
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Bullet;
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Chest;
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Player;
+import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.*;
 import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.Tile;
 import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.WorldMap;
 import ru.nsu.fit.kolesnik.notrealroyale.view.GameView;
@@ -37,13 +35,15 @@ public class GraphicGameView implements GameView {
     private double cameraY;
 
     Image backgroundImage = new Image("background.jpg");
-    Image playerImage = new Image("duck.png");
+    Image playerImage = new Image("player.png");
     Image sandImage = new Image("sand.png");
     Image wallImage = new Image("wall.png");
     Image rockImage = new Image("rock.png");
     Image cactusImage = new Image("cactus.png");
     Image bulletImage = new Image("bullet.png");
     Image chestImage = new Image("chest.png");
+    Image healingSalveImage = new Image("salve.png");
+    Image boosterImage = new Image("booster.png");
 
     public GraphicGameView(GameModel gameModel, GameController controller, Group root, Scene scene) {
         this.gameModel = gameModel;
@@ -79,8 +79,10 @@ public class GraphicGameView implements GameView {
                 cameraY = clientPlayer.getY();
                 drawBackground();
                 drawVisibleTiles();
-                drawBullets();
                 drawChests();
+                drawBoosters();
+                drawHealingSalves();
+                drawBullets();
                 drawPlayers();
             }
         });
@@ -141,6 +143,30 @@ public class GraphicGameView implements GameView {
             double chestY = chest.getY();
             if (chestX > cameraX - horizontalVisibleTilesPadding - 1 && chestX < cameraX + horizontalVisibleTilesPadding && chestY > cameraY - verticalVisibleTilesPadding - 1 && chestY < cameraY + verticalVisibleTilesPadding) {
                 graphicsContext.drawImage(chestImage, getGameObjectScreenX(chestX), getGameObjectScreenY(chestY));
+            }
+        }
+    }
+
+    private void drawBoosters() {
+        double horizontalVisibleTilesPadding = (GAME_WINDOW_WIDTH - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
+        double verticalVisibleTilesPadding = (GAME_WINDOW_HEIGHT - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
+        for (RevolverBooster revolverBooster : gameModel.getWorldMap().getBoosters()) {
+            double boosterX = revolverBooster.getX();
+            double boosterY = revolverBooster.getY();
+            if (boosterX > cameraX - horizontalVisibleTilesPadding - 1 && boosterX < cameraX + horizontalVisibleTilesPadding && boosterY > cameraY - verticalVisibleTilesPadding - 1 && boosterY < cameraY + verticalVisibleTilesPadding) {
+                graphicsContext.drawImage(boosterImage, getGameObjectScreenX(boosterX), getGameObjectScreenY(boosterY));
+            }
+        }
+    }
+
+    private void drawHealingSalves() {
+        double horizontalVisibleTilesPadding = (GAME_WINDOW_WIDTH - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
+        double verticalVisibleTilesPadding = (GAME_WINDOW_HEIGHT - DEFAULT_MODEL_UNIT_SIZE) / (2 * DEFAULT_MODEL_UNIT_SIZE) + 1;
+        for (HealingSalve healingSalve : gameModel.getWorldMap().getHealingSalves()) {
+            double healingSalveX = healingSalve.getX();
+            double healingSalveY = healingSalve.getY();
+            if (healingSalveX > cameraX - horizontalVisibleTilesPadding - 1 && healingSalveX < cameraX + horizontalVisibleTilesPadding && healingSalveY > cameraY - verticalVisibleTilesPadding - 1 && healingSalveY < cameraY + verticalVisibleTilesPadding) {
+                graphicsContext.drawImage(healingSalveImage, getGameObjectScreenX(healingSalveX), getGameObjectScreenY(healingSalveY));
             }
         }
     }

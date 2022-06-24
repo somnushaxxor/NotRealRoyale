@@ -54,8 +54,18 @@ public class GameModel {
                 isBulletCollided = true;
             } else {
                 for (Chest chest : worldMap.getChests()) {
-                    if ((chest.getX() == bulletOccupiedTileX1 || chest.getX() == bulletOccupiedTileX2) && (chest.getY() == bulletOccupiedTileY1 || chest.getY() == bulletOccupiedTileY2)) {
+                    if (bullet.isColliding(chest)) {
                         chest.receiveDamage(bullet.getDamage());
+                        if (!chest.isAlive()) {
+                            double randomNumber = Math.random();
+                            if (randomNumber < 0.25) {
+                                RevolverBooster revolverBooster = new RevolverBooster(chest.getX(), chest.getY());
+                                worldMap.getBoosters().add(revolverBooster);
+                            } else if (randomNumber < 0.5) {
+                                HealingSalve healingSalve = new HealingSalve(chest.getX(), chest.getY());
+                                worldMap.getHealingSalves().add(healingSalve);
+                            }
+                        }
                         isBulletCollided = true;
                         break;
                     }
@@ -150,6 +160,25 @@ public class GameModel {
         if (isMoveAvailable) {
             player.moveByDirection(direction);
         }
+
+        RevolverBooster revolverBoosterPickedUp = null;
+        for (RevolverBooster revolverBooster : worldMap.getBoosters()) {
+            if (player.isColliding(revolverBooster)) {
+                revolverBoosterPickedUp = revolverBooster;
+                player.powerUpRevolver();
+                break;
+            }
+        }
+        worldMap.getBoosters().remove(revolverBoosterPickedUp);
+        HealingSalve healingSalvePickedUp = null;
+        for (HealingSalve healingSalve : worldMap.getHealingSalves()) {
+            if (player.isColliding(healingSalve)) {
+                healingSalvePickedUp = healingSalve;
+                player.pickHealingSalveUp();
+                break;
+            }
+        }
+        worldMap.getHealingSalves().remove(healingSalvePickedUp);
     }
 
     public void shoot(double mouseX, double mouseY, UUID playerId) {
@@ -157,7 +186,7 @@ public class GameModel {
         double length = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
         double vectorX = mouseX / length;
         double vectorY = mouseY / length;
-        Bullet newBullet = new Bullet(player.getX(), player.getY(), vectorX, vectorY, player.getPistolDamage(), player);
+        Bullet newBullet = new Bullet(player.getX(), player.getY(), vectorX, vectorY, player);
         bullets.add(newBullet);
     }
 

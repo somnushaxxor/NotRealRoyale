@@ -21,6 +21,16 @@ public class GameObject {
         id = UUID.randomUUID();
     }
 
+    public boolean isColliding(GameObject other) {
+        if (getX() + getCollidableRectPaddingX() < other.getX() + other.getWidth() - other.getCollidableRectPaddingX() &&
+                getX() + getWidth() - getCollidableRectPaddingX() > other.getX() + other.getCollidableRectPaddingX() &&
+                getY() + getCollidableRectPaddingY() < other.getY() + other.getHeight() - other.getCollidableRectPaddingY() &&
+                getY() + getHeight() - getCollidableRectPaddingY() > other.getY() + other.getCollidableRectPaddingY()) {
+            return true;
+        }
+        return false;
+    }
+
     public double getX() {
         return x;
     }

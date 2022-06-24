@@ -1,20 +1,23 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
 import javafx.geometry.Point2D;
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.ActiveObject;
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Player;
 
 import java.util.List;
 
-public class Enemy extends ActiveObject {
-    private final static double DEFAULT_VELOCITY = 0.05;
-    private final static int DEFAULT_WIDTH = 1;
-    private final static int DEFAULT_HEIGHT = 1;
-    private final static double DEFAULT_COLLIDABLE_RECT_PADDING_X = 0.1;
-    private final static double DEFAULT_COLLIDABLE_RECT_PADDING_Y = 0.1;
+public class Enemy extends GameObject {
+    private final static int WIDTH = 1;
+    private final static int HEIGHT = 1;
+    private final static double COLLIDABLE_RECT_PADDING_X = 0.1;
+    private final static double COLLIDABLE_RECT_PADDING_Y = 0.1;
+    private final static double VELOCITY = 0.05;
+
+    private final double velocity;
+    private boolean alive;
 
     public Enemy(double x, double y) {
-        super(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_COLLIDABLE_RECT_PADDING_X, DEFAULT_COLLIDABLE_RECT_PADDING_Y, DEFAULT_VELOCITY);
+        super(x, y, WIDTH, HEIGHT, COLLIDABLE_RECT_PADDING_X, COLLIDABLE_RECT_PADDING_Y);
+        velocity = VELOCITY;
+        alive = true;
     }
 
     public void moveTowardsNearestPlayer(List<Player> playerList) {
@@ -38,5 +41,27 @@ public class Enemy extends ActiveObject {
             }
         }
         return nearestPlayer;
+    }
+
+    public void moveX(double dx) {
+        double currentX = getX();
+        setX(currentX + dx);
+    }
+
+    public void moveY(double dy) {
+        double currentY = getY();
+        setY(currentY + dy);
+    }
+
+    public double getVelocity() {
+        return velocity;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 }

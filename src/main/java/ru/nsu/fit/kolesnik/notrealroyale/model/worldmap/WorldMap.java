@@ -1,6 +1,8 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.worldmap;
 
+import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.RevolverBooster;
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Chest;
+import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.HealingSalve;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,9 +17,13 @@ public class WorldMap {
 
     private Tile[][] tiles;
     private final List<Chest> chests;
+    private final List<RevolverBooster> revolverBoosters;
+    private final List<HealingSalve> healingSalves;
 
     public WorldMap() {
         chests = new ArrayList<>();
+        revolverBoosters = new ArrayList<>();
+        healingSalves = new ArrayList<>();
     }
 
     public void loadMap(String mapName) {
@@ -88,5 +94,13 @@ public class WorldMap {
 
     public List<Chest> getChests() {
         return chests;
+    }
+
+    public List<RevolverBooster> getBoosters() {
+        return revolverBoosters;
+    }
+
+    public List<HealingSalve> getHealingSalves() {
+        return healingSalves;
     }
 }
