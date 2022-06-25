@@ -1,15 +1,15 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model;
 
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.*;
+import ru.nsu.fit.kolesnik.notrealroyale.model.subscriber.Subscriber;
 import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.WorldMap;
-import ru.nsu.fit.kolesnik.notrealroyale.view.GameView;
 
 import java.util.*;
 
 public class GameModel {
-    private final static String DEFAULT_MAP_NAME = "default.map";
+    private final static String MAP_NAME = "default";
 
-    private final List<GameView> subscribers;
+    private final List<Subscriber> subscribers;
     private final Timer timer;
 
     private final WorldMap worldMap;
@@ -20,16 +20,16 @@ public class GameModel {
         subscribers = new ArrayList<>();
         timer = new Timer();
         worldMap = new WorldMap();
-        worldMap.loadMap(DEFAULT_MAP_NAME);
+        worldMap.loadMap(MAP_NAME);
         bullets = new ArrayList<>();
         players = new ArrayList<>();
     }
 
-    public void addSubscriber(GameView view) {
-        subscribers.add(view);
-        Player newPlayer = new Player("JohnSmith", 51, 51);
+    public void addSubscriber(Subscriber subscriber) {
+        subscribers.add(subscriber);
+        //Player newPlayer = new Player(subscriber.getName(), 1 + Math.random() * (worldMap.getWidth() - 2), 1 + Math.random() * (worldMap.getHeight() - 2));
+        Player newPlayer = new Player(subscriber.getName(), 51, 51);
         players.add(newPlayer);
-        notifySubscriber(view, "PLAYER_ADDED " + newPlayer.getId().toString()); // connected???
     }
 
     public void start() {
@@ -77,25 +77,25 @@ public class GameModel {
         }
         bullets.removeIf(bullet -> (!bullet.isAlive()));
         worldMap.getChests().removeIf(chest -> (!chest.isAlive()));
-        notifyAllSubscribers("GAME_UPDATED");
+        notifyAllSubscribers();
     }
 
     public void stop() {
         timer.cancel();
     }
 
-    private void notifySubscriber(GameView view, String eventString) {
-        view.update(eventString);
+    private void notifySubscriber(Subscriber subscriber) {
+        subscriber.update();
     }
 
-    private void notifyAllSubscribers(String eventString) {
-        for (GameView subscriber : subscribers) {
-            notifySubscriber(subscriber, eventString);
+    private void notifyAllSubscribers() {
+        for (Subscriber subscriber : subscribers) {
+            notifySubscriber(subscriber);
         }
     }
 
-    public void movePlayerByDirection(Direction direction, UUID playerId) {
-        Player player = getPlayerById(playerId);
+    public synchronized void movePlayerByDirection(Direction direction, String playerName) {
+        Player player = getPlayerByName(playerName);
 
         boolean isMoveAvailable = true;
 
@@ -181,8 +181,8 @@ public class GameModel {
         worldMap.getHealingSalves().remove(healingSalvePickedUp);
     }
 
-    public void shoot(double mouseX, double mouseY, UUID playerId) {
-        Player player = getPlayerById(playerId);
+    public synchronized void shoot(double mouseX, double mouseY, String playerName) {
+        Player player = getPlayerByName(playerName);
         double length = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
         double vectorX = mouseX / length;
         double vectorY = mouseY / length;
@@ -202,9 +202,9 @@ public class GameModel {
         return players;
     }
 
-    public Player getPlayerById(UUID id) {
+    private Player getPlayerByName(String playerName) {
         for (Player player : players) {
-            if (player.getId().equals(id)) {
+            if (player.getName().equals(playerName)) {
                 return player;
             }
         }

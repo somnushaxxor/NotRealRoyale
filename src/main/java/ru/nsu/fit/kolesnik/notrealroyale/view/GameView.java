@@ -1,6 +1,10 @@
 package ru.nsu.fit.kolesnik.notrealroyale.view;
 
-public interface GameView {
+import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Chest;
+import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Player;
 
-    void update(String event);
+import java.util.List;
+
+public interface GameView {
+    void drawFrame(List<Player> players, List<Chest> chests);
 }

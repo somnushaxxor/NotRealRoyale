@@ -5,7 +5,6 @@ module ru.nsu.fit.kolesnik.notrealroyale {
 
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
-    requires validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
@@ -24,4 +23,6 @@ module ru.nsu.fit.kolesnik.notrealroyale {
     opens ru.nsu.fit.kolesnik.notrealroyale.view.javafx to javafx.fxml;
     exports ru.nsu.fit.kolesnik.notrealroyale.model.worldmap;
     opens ru.nsu.fit.kolesnik.notrealroyale.model.worldmap to javafx.fxml;
+    exports ru.nsu.fit.kolesnik.notrealroyale.model.subscriber;
+    opens ru.nsu.fit.kolesnik.notrealroyale.model.subscriber to javafx.fxml;
 }

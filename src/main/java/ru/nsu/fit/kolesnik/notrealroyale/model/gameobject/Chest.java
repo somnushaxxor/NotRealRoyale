@@ -1,6 +1,8 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
-public class Chest extends GameObject {
+import java.io.Serializable;
+
+public class Chest extends GameObject implements Serializable {
     private final static double MAX_HP = 40;
     private final static double WIDTH = 1;
     private final static double HEIGHT = 1;

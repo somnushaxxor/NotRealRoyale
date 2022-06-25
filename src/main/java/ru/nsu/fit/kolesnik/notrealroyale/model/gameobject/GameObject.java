@@ -1,15 +1,14 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
-import java.util.UUID;
+import java.io.Serializable;
 
-public class GameObject {
+public class GameObject implements Serializable {
     private double x;
     private double y;
     private final double width;
     private final double height;
     private final double collidableRectPaddingX;
     private final double collidableRectPaddingY;
-    private final UUID id;
 
     public GameObject(double x, double y, double width, double height, double collidableRectPaddingX, double collidableRectPaddingY) {
         this.x = x;
@@ -18,7 +17,6 @@ public class GameObject {
         this.height = height;
         this.collidableRectPaddingX = collidableRectPaddingX;
         this.collidableRectPaddingY = collidableRectPaddingY;
-        id = UUID.randomUUID();
     }
 
     public boolean isColliding(GameObject other) {
@@ -61,9 +59,5 @@ public class GameObject {
 
     public double getCollidableRectPaddingY() {
         return collidableRectPaddingY;
-    }
-
-    public UUID getId() {
-        return id;
     }
 }

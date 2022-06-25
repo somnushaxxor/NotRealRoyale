@@ -28,7 +28,7 @@ public class WorldMap {
 
     public void loadMap(String mapName) {
         try {
-            InputStream mapInputStream = getClass().getClassLoader().getResourceAsStream(mapName);
+            InputStream mapInputStream = getClass().getClassLoader().getResourceAsStream(mapName + ".map");
             if (mapInputStream == null) {
                 throw new RuntimeException("Can not open map file!");
             }

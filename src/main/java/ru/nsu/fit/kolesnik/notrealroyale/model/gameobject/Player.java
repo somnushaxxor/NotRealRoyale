@@ -1,8 +1,10 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
-public class Player extends GameObject {
+import java.io.Serializable;
+
+public class Player extends GameObject implements Serializable {
     private final static double MAX_HP = 100;
-    private final static double VELOCITY = 0.07;
+    private final static double VELOCITY = 0.05;
     private final static double WIDTH = 1;
     private final static double HEIGHT = 1;
     private final static double COLLIDABLE_RECT_PADDING_X = 0.15;

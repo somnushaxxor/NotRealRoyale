@@ -10,16 +10,17 @@ import java.util.HashMap;
 
 public class KeyHandler {
     private final GraphicGameView view;
+    private final GameController controller;
     private final HashMap<KeyCode, Boolean> keys;
 
-    public KeyHandler(GraphicGameView view) {
+    public KeyHandler(GraphicGameView view, GameController controller) {
         this.view = view;
+        this.controller = controller;
         keys = new HashMap<>();
     }
 
     public void startHandling() {
         Scene scene = view.getScene();
-        GameController controller = view.getController();
         scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
         scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
         scene.setOnMouseClicked(
