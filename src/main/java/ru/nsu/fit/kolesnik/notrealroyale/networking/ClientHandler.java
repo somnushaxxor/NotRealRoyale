@@ -4,17 +4,20 @@ import ru.nsu.fit.kolesnik.notrealroyale.model.GameModel;
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Direction;
 import ru.nsu.fit.kolesnik.notrealroyale.model.subscriber.InetSubscriber;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ClientHandler extends Thread {
-    private final Server server;
+    private final Socket socket;
     private final GameModel model;
+    private InetSubscriber inetSubscriber;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
-    public ClientHandler(Socket socket, Server server, GameModel model) {
-        this.server = server;
+    public ClientHandler(Socket socket, GameModel model) {
+        this.socket = socket;
         this.model = model;
         try {
             outputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -26,27 +29,38 @@ public class ClientHandler extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (!socket.isClosed()) {
             try {
-                String receivedString = inputStream.readUTF();
-                String[] receivedStringSplitted = receivedString.split(" ");
-                if (receivedStringSplitted[0].equals("CONNECT")) {
-                    String clientName = receivedStringSplitted[1];
-                    InetSubscriber subscriber = new InetSubscriber(clientName, server, model, outputStream);
-                    model.addSubscriber(subscriber);
-                } else if (receivedStringSplitted[0].equals("MOVED")) {
-                    String clientName = receivedStringSplitted[2];
-                    switch (receivedStringSplitted[1]) {
-                        case "UP" -> model.movePlayerByDirection(Direction.UP, clientName);
-                        case "DOWN" -> model.movePlayerByDirection(Direction.DOWN, clientName);
-                        case "LEFT" -> model.movePlayerByDirection(Direction.LEFT, clientName);
-                        case "RIGHT" -> model.movePlayerByDirection(Direction.RIGHT, clientName);
+                String messageFromClient = inputStream.readUTF();
+                String[] messageFromClientSplitted = messageFromClient.split(" ");
+                if (messageFromClientSplitted[0].equals("JOINED")) {
+                    String clientUsername = messageFromClientSplitted[1];
+                    inetSubscriber = new InetSubscriber(clientUsername, model, outputStream);
+                    model.addSubscriber(inetSubscriber);
+                } else if (messageFromClientSplitted[0].equals("MOVED")) {
+                    String clientUsername = messageFromClientSplitted[2];
+                    switch (messageFromClientSplitted[1]) {
+                        case "UP" -> model.movePlayerByDirection(Direction.UP, clientUsername);
+                        case "DOWN" -> model.movePlayerByDirection(Direction.DOWN, clientUsername);
+                        case "LEFT" -> model.movePlayerByDirection(Direction.LEFT, clientUsername);
+                        case "RIGHT" -> model.movePlayerByDirection(Direction.RIGHT, clientUsername);
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                closeConnectionToClient();
             }
+        }
+        model.removeSubscriber(inetSubscriber);
+    }
 
+    private void closeConnectionToClient() {
+        try {
+            inputStream.close();
+            outputStream.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -9,59 +9,58 @@ import ru.nsu.fit.kolesnik.notrealroyale.view.GameView;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.List;
 
-public class Client extends Thread {
-    private final String clientName;
-    private InetAddress serverIP;
-    private final int serverPort;
-    private Socket socket;
+public class Client {
+    private final Socket socket;
+    private final String clientUsername;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
     private GameController controller;
     private GameView view;
 
-    public Client(String clientName, String serverIPString, int serverPort) {
-        this.clientName = clientName;
-        this.serverPort = serverPort;
+    public Client(Socket socket, String clientUsername) {
+        this.socket = socket;
+        this.clientUsername = clientUsername;
         try {
-            this.serverIP = InetAddress.getByName(serverIPString);
-        } catch (UnknownHostException e) {
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            inputStream = new ObjectInputStream(socket.getInputStream());
+            outputStream.writeUTF("JOINED " + clientUsername);
+            outputStream.flush();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                String receivedString = inputStream.readUTF();
-                if (receivedString.equals("UPDATE")) {
-                    List<Player> players = (List<Player>) inputStream.readObject();
-                    List<Chest> сhests = (List<Chest>) inputStream.readObject();
-                    Platform.runLater(() -> {
-                        view.drawFrame(players, сhests);
-                    });
+    @SuppressWarnings("unchecked")
+    public void receiveMessagesFromServer() {
+        Thread receiver = new Thread(() -> {
+            while (!socket.isClosed()) {
+                try {
+                    String messageFromServer = inputStream.readUTF();
+                    if (messageFromServer.equals("UPDATE")) {
+                        List<Player> players = (List<Player>) inputStream.readObject();
+                        List<Chest> chests = (List<Chest>) inputStream.readObject();
+                        Platform.runLater(() -> view.drawFrame(players, chests));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             }
-        }
+        });
+        receiver.start();
     }
 
-    public void connectToServer() {
+    public void closeConnectionToServer() {
         try {
-            socket = new Socket(serverIP, serverPort);
-            outputStream = new ObjectOutputStream(socket.getOutputStream());
-            inputStream = new ObjectInputStream(socket.getInputStream());
-            outputStream.writeUTF("CONNECT " + clientName);
-            outputStream.flush();
+            inputStream.close();
+            outputStream.close();
+            socket.close();
+            System.out.println("Client closed!");
         } catch (IOException e) {
             e.printStackTrace();
         }

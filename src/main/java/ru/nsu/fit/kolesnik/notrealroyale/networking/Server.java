@@ -5,44 +5,25 @@ import ru.nsu.fit.kolesnik.notrealroyale.model.GameModel;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
-public class Server extends Thread {
-    private ServerSocket serverSocket;
-    private List<Socket> sockets;
-    private List<ClientHandler> clientHandlers;
-
+public class Server {
+    private final ServerSocket serverSocket;
     private final GameModel model;
 
-    public Server(int port, GameModel model) {
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        sockets = new ArrayList<>();
-        clientHandlers = new ArrayList<>();
+    public Server(ServerSocket serverSocket, GameModel model) {
+        this.serverSocket = serverSocket;
         this.model = model;
     }
 
-    private void listenForRequest() {
+    public void listenForServerRequest() {
+        System.out.println("Server waiting for requests...");
         try {
             Socket socket = serverSocket.accept();
-            sockets.add(socket);
-            ClientHandler clientHandler = new ClientHandler(socket, this, model);
-            clientHandlers.add(clientHandler);
+            System.out.println("Client accepted!");
+            ClientHandler clientHandler = new ClientHandler(socket, model);
             clientHandler.start();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void run() {
-        model.start();
-        while (true) {
-            listenForRequest();
         }
     }
 }

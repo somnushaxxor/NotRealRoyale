@@ -25,11 +25,15 @@ public class GameModel {
         players = new ArrayList<>();
     }
 
-    public void addSubscriber(Subscriber subscriber) {
+    public synchronized void addSubscriber(Subscriber subscriber) {
         subscribers.add(subscriber);
         //Player newPlayer = new Player(subscriber.getName(), 1 + Math.random() * (worldMap.getWidth() - 2), 1 + Math.random() * (worldMap.getHeight() - 2));
         Player newPlayer = new Player(subscriber.getName(), 51, 51);
         players.add(newPlayer);
+    }
+
+    public synchronized void removeSubscriber(Subscriber subscriber) {
+        subscribers.remove(subscriber);
     }
 
     public void start() {

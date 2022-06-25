@@ -11,13 +11,13 @@ import ru.nsu.fit.kolesnik.notrealroyale.networking.Client;
 import ru.nsu.fit.kolesnik.notrealroyale.view.GameView;
 import ru.nsu.fit.kolesnik.notrealroyale.view.javafx.GraphicGameView;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.UUID;
 
 public class ClientApplication extends Application {
+    private static String clientUsername;
     private static Client client;
-    private static GameController controller;
-
-    String clientName = "Artem" + UUID.randomUUID();
 
     public static void main(String[] args) {
         launch();
@@ -25,11 +25,13 @@ public class ClientApplication extends Application {
 
     @Override
     public void init() {
-        client = new Client(clientName, "localhost", 12000);
-        client.connectToServer();
-        controller = new InetGameController(clientName, client.getObjectOutputStream());
-        client.setGameController(controller);
-        client.start();
+        clientUsername = "Artem" + UUID.randomUUID();
+        try {
+            Socket socket = new Socket("localhost", 12000);
+            client = new Client(socket, clientUsername);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -38,12 +40,16 @@ public class ClientApplication extends Application {
         Group root = new Group(canvas);
         Scene scene = new Scene(root);
 
-        GameView view = new GraphicGameView(clientName, controller, canvas, scene);
+        GameController controller = new InetGameController(clientUsername, client.getObjectOutputStream());
+        client.setGameController(controller);
+        GameView view = new GraphicGameView(clientUsername, controller, canvas, scene);
         client.setGameView(view);
 
-
+        primaryStage.setOnCloseRequest(event -> client.closeConnectionToServer());
         primaryStage.setTitle("NotRealRoyale");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        client.receiveMessagesFromServer();
     }
 }
