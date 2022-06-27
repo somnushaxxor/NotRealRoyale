@@ -1,8 +1,6 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
-import java.io.Serializable;
-
-public class Player extends GameObject implements Serializable {
+public class Player extends GameObject {
     private final static double MAX_HP = 100;
     private final static double VELOCITY = 0.05;
     private final static double WIDTH = 1;
@@ -15,6 +13,7 @@ public class Player extends GameObject implements Serializable {
 
 
     private double hp;
+    private int score;
     private boolean alive;
     private double revolverBulletDamage;
     private double revolverBulletSpeed;
@@ -26,6 +25,7 @@ public class Player extends GameObject implements Serializable {
     public Player(String name, double x, double y) {
         super(x, y, WIDTH, HEIGHT, COLLIDABLE_RECT_PADDING_X, COLLIDABLE_RECT_PADDING_Y);
         this.hp = MAX_HP;
+        this.score = 0;
         this.name = name;
         revolverBulletDamage = DEFAULT_REVOLVER_BULLET_DAMAGE;
         revolverBulletMaxRange = DEFAULT_REVOLVER_BULLET_MAX_RANGE;
@@ -57,6 +57,13 @@ public class Player extends GameObject implements Serializable {
         }
     }
 
+    public void receiveDamage(double damage) {
+        hp -= damage;
+        if (hp <= 0) {
+            setAlive(false);
+        }
+    }
+
     public void pickHealingSalveUp() {
         healingSalvesNumber++;
     }
@@ -72,6 +79,10 @@ public class Player extends GameObject implements Serializable {
         revolverBulletDamage = revolverBulletDamage * RevolverBooster.REVOLVER_BULLET_DAMAGE_MULTIPLIER;
         revolverBulletSpeed = revolverBulletSpeed * RevolverBooster.REVOLVER_BULLET_SPEED_MULTIPLIER;
         revolverBulletMaxRange = revolverBulletMaxRange * RevolverBooster.REVOLVER_BULLET_MAX_RANGE_MULTIPLIER;
+    }
+
+    public void score() {
+        score++;
     }
 
     public String getName() {

@@ -1,13 +1,8 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.worldmap;
 
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.RevolverBooster;
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Chest;
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.HealingSalve;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +10,12 @@ public class WorldMap {
     private int width;
     private int height;
 
+    private final String mapName;
+
     private Tile[][] tiles;
-    private final List<Chest> chests;
-    private final List<RevolverBooster> revolverBoosters;
-    private final List<HealingSalve> healingSalves;
 
-    public WorldMap() {
-        chests = new ArrayList<>();
-        revolverBoosters = new ArrayList<>();
-        healingSalves = new ArrayList<>();
-    }
-
-    public void loadMap(String mapName) {
+    public WorldMap(String mapName) {
+        this.mapName = mapName;
         try {
             InputStream mapInputStream = getClass().getClassLoader().getResourceAsStream(mapName + ".map");
             if (mapInputStream == null) {
@@ -63,10 +52,6 @@ public class WorldMap {
                         tiles[y][x] = Tile.CACTUS;
                     } else if (mapLine.charAt(x) == '.') {
                         tiles[y][x] = Tile.SAND;
-                        if (Math.random() < 0.005) {
-                            Chest chest = new Chest(x, y);
-                            chests.add(chest);
-                        }
                     } else {
                         throw new RuntimeException("Invalid map file format!");
                     }
@@ -80,6 +65,23 @@ public class WorldMap {
         }
     }
 
+    public List<Chest> placeChests() {
+        List<Chest> chests = new ArrayList<>();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (tiles[y][x] == Tile.SAND && Math.random() < 0.005) {
+                    Chest chest = new Chest(x, y);
+                    chests.add(chest);
+                }
+            }
+        }
+        return chests;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
     public int getWidth() {
         return width;
     }
@@ -90,17 +92,5 @@ public class WorldMap {
 
     public Tile getTile(int tileX, int tileY) {
         return tiles[tileY][tileX];
-    }
-
-    public List<Chest> getChests() {
-        return chests;
-    }
-
-    public List<RevolverBooster> getBoosters() {
-        return revolverBoosters;
-    }
-
-    public List<HealingSalve> getHealingSalves() {
-        return healingSalves;
     }
 }

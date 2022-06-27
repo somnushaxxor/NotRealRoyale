@@ -33,10 +33,25 @@ public class ClientHandler extends Thread {
             try {
                 String messageFromClient = inputStream.readUTF();
                 String[] messageFromClientSplitted = messageFromClient.split(" ");
-                if (messageFromClientSplitted[0].equals("JOINED")) {
+                if (messageFromClientSplitted[0].equals("JOIN")) {
                     String clientUsername = messageFromClientSplitted[1];
-                    inetSubscriber = new InetSubscriber(clientUsername, model, outputStream);
-                    model.addSubscriber(inetSubscriber);
+                    boolean clientUsernameIsAlreadyInUse = false;
+                    synchronized (model) {
+                        if (!model.hasSubscriberNamed(clientUsername)) {
+                            inetSubscriber = new InetSubscriber(clientUsername, model, outputStream);
+                            model.addSubscriber(inetSubscriber);
+                        } else {
+                            clientUsernameIsAlreadyInUse = true;
+                        }
+                    }
+                    if (!clientUsernameIsAlreadyInUse) {
+                        outputStream.writeUTF("OK");
+                        outputStream.writeUTF(model.getWorldMap().getMapName());
+                        outputStream.flush();
+                    } else {
+                        outputStream.writeUTF("NAME ALREADY IN USE");
+                        outputStream.flush();
+                    }
                 } else if (messageFromClientSplitted[0].equals("MOVED")) {
                     String clientUsername = messageFromClientSplitted[2];
                     switch (messageFromClientSplitted[1]) {
@@ -45,19 +60,28 @@ public class ClientHandler extends Thread {
                         case "LEFT" -> model.movePlayerByDirection(Direction.LEFT, clientUsername);
                         case "RIGHT" -> model.movePlayerByDirection(Direction.RIGHT, clientUsername);
                     }
+                } else if (messageFromClientSplitted[0].equals("CLICKED")) {
+                    double mouseX = Double.parseDouble(messageFromClientSplitted[1]);
+                    double mouseY = Double.parseDouble(messageFromClientSplitted[2]);
+                    String clientUsername = messageFromClientSplitted[3];
+                    model.shoot(mouseX, mouseY, clientUsername);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                closeConnectionToClient();
+                stopHandlingClient();
             }
         }
         model.removeSubscriber(inetSubscriber);
     }
 
-    private void closeConnectionToClient() {
+    private void stopHandlingClient() {
         try {
-            inputStream.close();
-            outputStream.close();
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (outputStream != null) {
+                outputStream.close();
+            }
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();

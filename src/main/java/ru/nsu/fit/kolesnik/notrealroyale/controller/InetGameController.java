@@ -36,6 +36,11 @@ public class InetGameController implements GameController {
 
     @Override
     public void onMouseClicked(double mouseX, double mouseY) {
-        //outputStream.writeUTF("CLICKED " + mouseX + " " + mouseY + " " + clientName);
+        try {
+            outputStream.writeUTF("CLICKED " + mouseX + " " + mouseY + " " + clientName);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

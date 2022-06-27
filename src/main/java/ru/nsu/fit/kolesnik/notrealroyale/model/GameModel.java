@@ -9,34 +9,43 @@ import java.util.*;
 public class GameModel {
     private final static String MAP_NAME = "default";
 
-    private final List<Subscriber> subscribers;
+    private final HashMap<String, Subscriber> subscribers;
     private final Timer timer;
 
     private final WorldMap worldMap;
     private final List<Player> players;
     private final List<Bullet> bullets;
+    private final List<Chest> chests;
+    private final List<RevolverBooster> revolverBoosters;
+    private final List<HealingSalve> healingSalves;
 
     public GameModel() {
-        subscribers = new ArrayList<>();
+        subscribers = new HashMap<>();
         timer = new Timer();
-        worldMap = new WorldMap();
-        worldMap.loadMap(MAP_NAME);
-        bullets = new ArrayList<>();
+        worldMap = new WorldMap(MAP_NAME);
+        chests = worldMap.placeChests();
         players = new ArrayList<>();
+        bullets = new ArrayList<>();
+        revolverBoosters = new ArrayList<>();
+        healingSalves = new ArrayList<>();
     }
 
-    public synchronized void addSubscriber(Subscriber subscriber) {
-        subscribers.add(subscriber);
+    public void addSubscriber(Subscriber subscriber) {
+        subscribers.put(subscriber.getName(), subscriber);
         //Player newPlayer = new Player(subscriber.getName(), 1 + Math.random() * (worldMap.getWidth() - 2), 1 + Math.random() * (worldMap.getHeight() - 2));
         Player newPlayer = new Player(subscriber.getName(), 51, 51);
         players.add(newPlayer);
     }
 
-    public synchronized void removeSubscriber(Subscriber subscriber) {
-        subscribers.remove(subscriber);
+    public boolean hasSubscriberNamed(String subscriberName) {
+        return subscribers.containsKey(subscriberName);
     }
 
-    public void start() {
+    public synchronized void removeSubscriber(Subscriber subscriber) {
+        subscribers.remove(subscriber.getName());
+    }
+
+    public synchronized void start() {
         TimerTask updateTask = new TimerTask() {
             @Override
             public void run() {
@@ -46,45 +55,54 @@ public class GameModel {
         timer.scheduleAtFixedRate(updateTask, 0, 20);
     }
 
-    private void update() {
+    private synchronized void update() {
         for (Bullet bullet : bullets) {
             bullet.update();
-            boolean isBulletCollided = false;
+            for (Player player : players) {
+                if (bullet.isColliding(player) && !bullet.getPlayer().equals(player)) {
+                    player.receiveDamage(bullet.getDamage());
+                    if (!player.isAlive()) {
+                        bullet.getPlayer().score();
+                        players.remove(player);
+                    }
+                    bullet.setAlive(false);
+                }
+            }
+            if (!bullet.isAlive()) {
+                continue;
+            }
             int bulletOccupiedTileX1 = (int) Math.floor(bullet.getX() + bullet.getCollidableRectPaddingX());
             int bulletOccupiedTileX2 = (int) Math.floor(bullet.getX() + 1 - bullet.getCollidableRectPaddingX());
             int bulletOccupiedTileY1 = (int) Math.floor(bullet.getY() + bullet.getCollidableRectPaddingY());
             int bulletOccupiedTileY2 = (int) Math.floor(bullet.getY() + 1 - bullet.getCollidableRectPaddingY());
             if (worldMap.getTile(bulletOccupiedTileX1, bulletOccupiedTileY1).isCollidable() || worldMap.getTile(bulletOccupiedTileX1, bulletOccupiedTileY2).isCollidable() || worldMap.getTile(bulletOccupiedTileX2, bulletOccupiedTileY1).isCollidable() || worldMap.getTile(bulletOccupiedTileX2, bulletOccupiedTileY2).isCollidable()) {
-                isBulletCollided = true;
+                bullet.setAlive(false);
             } else {
-                for (Chest chest : worldMap.getChests()) {
+                for (Chest chest : chests) {
                     if (bullet.isColliding(chest)) {
                         chest.receiveDamage(bullet.getDamage());
                         if (!chest.isAlive()) {
                             double randomNumber = Math.random();
                             if (randomNumber < 0.25) {
                                 RevolverBooster revolverBooster = new RevolverBooster(chest.getX(), chest.getY());
-                                worldMap.getBoosters().add(revolverBooster);
+                                revolverBoosters.add(revolverBooster);
                             } else if (randomNumber < 0.5) {
                                 HealingSalve healingSalve = new HealingSalve(chest.getX(), chest.getY());
-                                worldMap.getHealingSalves().add(healingSalve);
+                                healingSalves.add(healingSalve);
                             }
                         }
-                        isBulletCollided = true;
+                        bullet.setAlive(false);
                         break;
                     }
                 }
             }
-            if (isBulletCollided) {
-                bullet.setAlive(false);
-            }
         }
         bullets.removeIf(bullet -> (!bullet.isAlive()));
-        worldMap.getChests().removeIf(chest -> (!chest.isAlive()));
+        chests.removeIf(chest -> (!chest.isAlive()));
         notifyAllSubscribers();
     }
 
-    public void stop() {
+    public synchronized void stop() {
         timer.cancel();
     }
 
@@ -92,14 +110,17 @@ public class GameModel {
         subscriber.update();
     }
 
-    private void notifyAllSubscribers() {
-        for (Subscriber subscriber : subscribers) {
-            notifySubscriber(subscriber);
+    private synchronized void notifyAllSubscribers() {
+        for (Map.Entry<String, Subscriber> entry : subscribers.entrySet()) {
+            notifySubscriber(entry.getValue());
         }
     }
 
     public synchronized void movePlayerByDirection(Direction direction, String playerName) {
         Player player = getPlayerByName(playerName);
+        if (player == null) {
+            return;
+        }
 
         boolean isMoveAvailable = true;
 
@@ -110,7 +131,7 @@ public class GameModel {
             if (worldMap.getTile(playerOccupiedTile1, playerTopTilesY).isCollidable() || worldMap.getTile(playerOccupiedTile2, playerTopTilesY).isCollidable()) {
                 isMoveAvailable = false;
             } else {
-                for (Chest chest : worldMap.getChests()) {
+                for (Chest chest : chests) {
                     if ((chest.getX() == playerOccupiedTile1 || chest.getX() == playerOccupiedTile2) && chest.getY() == playerTopTilesY) {
                         isMoveAvailable = false;
                         break;
@@ -124,7 +145,7 @@ public class GameModel {
             if (worldMap.getTile(playerOccupiedTile1, playerBottomTilesY).isCollidable() || worldMap.getTile(playerOccupiedTile2, playerBottomTilesY).isCollidable()) {
                 isMoveAvailable = false;
             } else {
-                for (Chest chest : worldMap.getChests()) {
+                for (Chest chest : chests) {
                     if ((chest.getX() == playerOccupiedTile1 || chest.getX() == playerOccupiedTile2) && chest.getY() == playerBottomTilesY) {
                         isMoveAvailable = false;
                         break;
@@ -138,7 +159,7 @@ public class GameModel {
             if (worldMap.getTile(playerLeftTilesX, playerOccupiedTile1).isCollidable() || worldMap.getTile(playerLeftTilesX, playerOccupiedTile2).isCollidable()) {
                 isMoveAvailable = false;
             } else {
-                for (Chest chest : worldMap.getChests()) {
+                for (Chest chest : chests) {
                     if (chest.getX() == playerLeftTilesX && (chest.getY() == playerOccupiedTile1 || chest.getY() == playerOccupiedTile2)) {
                         isMoveAvailable = false;
                         break;
@@ -152,7 +173,7 @@ public class GameModel {
             if (worldMap.getTile(playerRightTilesX, playerOccupiedTile1).isCollidable() || worldMap.getTile(playerRightTilesX, playerOccupiedTile2).isCollidable()) {
                 isMoveAvailable = false;
             } else {
-                for (Chest chest : worldMap.getChests()) {
+                for (Chest chest : chests) {
                     if (chest.getX() == playerRightTilesX && (chest.getY() == playerOccupiedTile1 || chest.getY() == playerOccupiedTile2)) {
                         isMoveAvailable = false;
                         break;
@@ -166,44 +187,58 @@ public class GameModel {
         }
 
         RevolverBooster revolverBoosterPickedUp = null;
-        for (RevolverBooster revolverBooster : worldMap.getBoosters()) {
+        for (RevolverBooster revolverBooster : revolverBoosters) {
             if (player.isColliding(revolverBooster)) {
                 revolverBoosterPickedUp = revolverBooster;
                 player.powerUpRevolver();
                 break;
             }
         }
-        worldMap.getBoosters().remove(revolverBoosterPickedUp);
+        revolverBoosters.remove(revolverBoosterPickedUp);
         HealingSalve healingSalvePickedUp = null;
-        for (HealingSalve healingSalve : worldMap.getHealingSalves()) {
+        for (HealingSalve healingSalve : healingSalves) {
             if (player.isColliding(healingSalve)) {
                 healingSalvePickedUp = healingSalve;
                 player.pickHealingSalveUp();
                 break;
             }
         }
-        worldMap.getHealingSalves().remove(healingSalvePickedUp);
+        healingSalves.remove(healingSalvePickedUp);
     }
 
     public synchronized void shoot(double mouseX, double mouseY, String playerName) {
         Player player = getPlayerByName(playerName);
-        double length = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
-        double vectorX = mouseX / length;
-        double vectorY = mouseY / length;
-        Bullet newBullet = new Bullet(player.getX(), player.getY(), vectorX, vectorY, player);
-        bullets.add(newBullet);
+        if (player != null) {
+            double length = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+            double vectorX = mouseX / length;
+            double vectorY = mouseY / length;
+            Bullet newBullet = new Bullet(player.getX(), player.getY(), vectorX, vectorY, player);
+            bullets.add(newBullet);
+        }
     }
 
     public WorldMap getWorldMap() {
         return worldMap;
     }
 
-    public List<Bullet> getBullets() {
+    public synchronized List<Player> getPlayers() {
+        return players;
+    }
+
+    public synchronized List<Chest> getChests() {
+        return chests;
+    }
+
+    public synchronized List<Bullet> getBullets() {
         return bullets;
     }
 
-    public List<Player> getPlayers() {
-        return players;
+    public synchronized List<RevolverBooster> getRevolverBoosters() {
+        return revolverBoosters;
+    }
+
+    public synchronized List<HealingSalve> getHealingSalves() {
+        return healingSalves;
     }
 
     private Player getPlayerByName(String playerName) {

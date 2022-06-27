@@ -44,6 +44,10 @@ public class Bullet extends GameObject {
         setY(currentY + dy);
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
     public double getDamage() {
         return damage;
     }

@@ -1,12 +1,9 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.subscriber;
 
 import ru.nsu.fit.kolesnik.notrealroyale.model.GameModel;
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Chest;
-import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.Player;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.List;
 
 public class InetSubscriber implements Subscriber {
     private final String name;
@@ -28,12 +25,13 @@ public class InetSubscriber implements Subscriber {
     public void update() {
         try {
             outputStream.writeUTF("UPDATE");
-            List<Player> players = model.getPlayers();
-            outputStream.writeObject(players);
-            List<Chest> chests = model.getWorldMap().getChests();
-            outputStream.writeObject(chests);
-            outputStream.reset();
+            outputStream.writeObject(model.getPlayers());
+            outputStream.writeObject(model.getChests());
+            outputStream.writeObject(model.getBullets());
+            outputStream.writeObject(model.getRevolverBoosters());
+            outputStream.writeObject(model.getHealingSalves());
             outputStream.flush();
+            outputStream.reset();
         } catch (IOException e) {
             e.printStackTrace();
         }
