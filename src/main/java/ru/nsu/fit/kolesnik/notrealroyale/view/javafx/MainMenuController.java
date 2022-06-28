@@ -58,6 +58,7 @@ public class MainMenuController {
                 });
                 gameSessionStage.show();
                 mainMenuStage.close();
+                errorMessageLabel.setText("");
             } catch (UnknownHostException e) {
                 e.printStackTrace();
                 errorMessageLabel.setText(UNKNOWN_HOST_EXCEPTION_LABEL_TEXT);

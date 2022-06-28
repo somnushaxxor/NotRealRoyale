@@ -13,18 +13,6 @@ public class InetGameController implements GameController {
     }
 
     @Override
-    public void onKeyTyped(Key key) {
-        try {
-            if (key == Key.E) {
-                outputStream.writeUTF("HEAL " + clientUsername);
-            }
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void onKeyPressed(Key key) {
         try {
             switch (key) {
@@ -32,6 +20,7 @@ public class InetGameController implements GameController {
                 case S -> outputStream.writeUTF("MOVED DOWN " + clientUsername);
                 case A -> outputStream.writeUTF("MOVED LEFT " + clientUsername);
                 case D -> outputStream.writeUTF("MOVED RIGHT " + clientUsername);
+                case E -> outputStream.writeUTF("HEAL " + clientUsername);
             }
             outputStream.flush();
         } catch (IOException e) {

@@ -5,6 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import ru.nsu.fit.kolesnik.notrealroyale.controller.GameController;
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.*;
 import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.Tile;
@@ -28,6 +30,7 @@ public class GraphicGameView implements GameView {
 
     private final Image backgroundImage = new Image("background.jpg");
     private final Image playerImage = new Image("player.png");
+    private final Image hpImage = new Image("hp.png");
     private final Image sandImage = new Image("sand.png");
     private final Image wallImage = new Image("wall.png");
     private final Image rockImage = new Image("rock.png");
@@ -37,12 +40,17 @@ public class GraphicGameView implements GameView {
     private final Image healingSalveImage = new Image("salve.png");
     private final Image boosterImage = new Image("booster.png");
 
+    private final Font font;
+
     public GraphicGameView(String clientUsername, Canvas canvas, Scene scene) {
         this.clientUsername = clientUsername;
         this.canvas = canvas;
         this.graphicsContext = canvas.getGraphicsContext2D();
         this.scene = scene;
         scene.setCursor(new ImageCursor(new Image("cursor.png")));
+        graphicsContext.setFill(Color.WHITE);
+        font = new Font("Verdana", 24);
+        graphicsContext.setFont(font);
     }
 
     public void startHandlingUserInput(GameController controller) {
@@ -56,12 +64,16 @@ public class GraphicGameView implements GameView {
 
     @Override
     public void drawFrame(WorldMap worldMap, List<Player> players, List<Chest> chests, List<Bullet> bullets, List<RevolverBooster> revolverBoosters, List<HealingSalve> healingSalves) {
+        Player clientPlayer = null;
         for (Player player : players) {
             if (player.getName().equals(clientUsername)) {
-                cameraX = player.getX();
-                cameraY = player.getY();
+                clientPlayer = player;
                 break;
             }
+        }
+        if (clientPlayer != null) {
+            cameraX = clientPlayer.getX();
+            cameraY = clientPlayer.getY();
         }
         drawBackground();
         drawVisibleTiles(worldMap);
@@ -70,6 +82,7 @@ public class GraphicGameView implements GameView {
         drawRevolverBoosters(revolverBoosters);
         drawHealingSalves(healingSalves);
         drawPlayers(players);
+        drawUserInterface(clientPlayer);
     }
 
     private void drawBackground() {
@@ -151,6 +164,17 @@ public class GraphicGameView implements GameView {
             if (healingSalveX > cameraX - horizontalVisibleTilesPadding - 1 && healingSalveX < cameraX + horizontalVisibleTilesPadding && healingSalveY > cameraY - verticalVisibleTilesPadding - 1 && healingSalveY < cameraY + verticalVisibleTilesPadding) {
                 graphicsContext.drawImage(healingSalveImage, getScreenX(healingSalveX), getScreenY(healingSalveY));
             }
+        }
+    }
+
+    private void drawUserInterface(Player clientPlayer) {
+        if (clientPlayer != null) {
+            graphicsContext.drawImage(hpImage, 1, 1);
+            graphicsContext.fillText(String.valueOf(clientPlayer.getHp()), hpImage.getWidth() + 1, font.getSize() + 1);
+            graphicsContext.fillText("LVL: " + clientPlayer.getRevolverLevel(), 1, 2 * font.getSize() + 4);
+            graphicsContext.drawImage(healingSalveImage, 1, 2 * font.getSize() + 5);
+            graphicsContext.fillText(": " + clientPlayer.getHealingSalvesNumber(), healingSalveImage.getWidth() + 1, 3 * font.getSize() + 6);
+            graphicsContext.fillText("SCORE: " + clientPlayer.getScore(), 1, 4 * font.getSize() + 8);
         }
     }
 

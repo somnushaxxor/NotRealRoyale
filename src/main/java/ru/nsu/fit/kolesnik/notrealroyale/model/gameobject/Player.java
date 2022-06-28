@@ -14,6 +14,7 @@ public class Player extends GameObject {
 
     private double hp;
     private int score;
+    private int revolverLevel;
     private boolean alive;
     private double revolverBulletDamage;
     private double revolverBulletSpeed;
@@ -24,8 +25,9 @@ public class Player extends GameObject {
 
     public Player(String name, double x, double y) {
         super(x, y, WIDTH, HEIGHT, COLLIDABLE_RECT_PADDING_X, COLLIDABLE_RECT_PADDING_Y);
-        this.hp = MAX_HP;
-        this.score = 0;
+        hp = MAX_HP;
+        score = 0;
+        revolverLevel = 1;
         this.name = name;
         revolverBulletDamage = DEFAULT_REVOLVER_BULLET_DAMAGE;
         revolverBulletMaxRange = DEFAULT_REVOLVER_BULLET_MAX_RANGE;
@@ -83,6 +85,7 @@ public class Player extends GameObject {
         revolverBulletDamage = revolverBulletDamage * RevolverBooster.REVOLVER_BULLET_DAMAGE_MULTIPLIER;
         revolverBulletSpeed = revolverBulletSpeed * RevolverBooster.REVOLVER_BULLET_SPEED_MULTIPLIER;
         revolverBulletMaxRange = revolverBulletMaxRange * RevolverBooster.REVOLVER_BULLET_MAX_RANGE_MULTIPLIER;
+        revolverLevel++;
     }
 
     public void score() {
@@ -115,5 +118,21 @@ public class Player extends GameObject {
 
     public void setAlive(boolean alive) {
         this.alive = alive;
+    }
+
+    public double getHp() {
+        return hp;
+    }
+
+    public int getRevolverLevel() {
+        return revolverLevel;
+    }
+
+    public int getHealingSalvesNumber() {
+        return healingSalvesNumber;
+    }
+
+    public int getScore() {
+        return score;
     }
 }

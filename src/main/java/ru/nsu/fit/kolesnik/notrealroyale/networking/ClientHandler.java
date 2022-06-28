@@ -66,7 +66,7 @@ public class ClientHandler extends Thread {
                     String clientUsername = messageFromClientSplitted[3];
                     model.shoot(mouseX, mouseY, clientUsername);
                 } else if (messageFromClientSplitted[0].equals("HEAL")) {
-                    String clientUsername = messageFromClientSplitted[3];
+                    String clientUsername = messageFromClientSplitted[1];
                     model.healPlayer(clientUsername);
                 }
             } catch (IOException e) {

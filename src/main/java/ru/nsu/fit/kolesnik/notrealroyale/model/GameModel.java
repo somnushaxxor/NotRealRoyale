@@ -2,6 +2,7 @@ package ru.nsu.fit.kolesnik.notrealroyale.model;
 
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.*;
 import ru.nsu.fit.kolesnik.notrealroyale.model.subscriber.Subscriber;
+import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.Tile;
 import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.WorldMap;
 
 import java.util.*;
@@ -32,8 +33,7 @@ public class GameModel {
 
     public void addSubscriber(Subscriber subscriber) {
         subscribers.put(subscriber.getName(), subscriber);
-        //Player newPlayer = new Player(subscriber.getName(), 1 + Math.random() * (worldMap.getWidth() - 2), 1 + Math.random() * (worldMap.getHeight() - 2));
-        Player newPlayer = new Player(subscriber.getName(), 51, 51);
+        Player newPlayer = new Player(subscriber.getName(), worldMap.getWidth() / 2.0, worldMap.getHeight() / 2.0);
         players.add(newPlayer);
     }
 
@@ -43,6 +43,7 @@ public class GameModel {
 
     public synchronized void removeSubscriber(Subscriber subscriber) {
         subscribers.remove(subscriber.getName());
+        players.remove(getPlayerByName(subscriber.getName()));
     }
 
     public synchronized void start() {
@@ -63,11 +64,11 @@ public class GameModel {
                     player.receiveDamage(bullet.getDamage());
                     if (!player.isAlive()) {
                         bullet.getPlayer().score();
-                        players.remove(player);
                     }
                     bullet.setAlive(false);
                 }
             }
+            players.removeIf(player -> (!player.isAlive()));
             if (!bullet.isAlive()) {
                 continue;
             }
@@ -128,7 +129,9 @@ public class GameModel {
             int playerTopTilesY = (int) (Math.floor(player.getY() - player.getVelocity() + player.getCollidableRectPaddingY()));
             int playerOccupiedTile1 = (int) Math.floor(player.getX() + player.getCollidableRectPaddingX());
             int playerOccupiedTile2 = (int) Math.floor(player.getX() + 1 - player.getCollidableRectPaddingX());
-            if (worldMap.getTile(playerOccupiedTile1, playerTopTilesY).isCollidable() || worldMap.getTile(playerOccupiedTile2, playerTopTilesY).isCollidable()) {
+            Tile tile1 = worldMap.getTile(playerOccupiedTile1, playerTopTilesY);
+            Tile tile2 = worldMap.getTile(playerOccupiedTile2, playerTopTilesY);
+            if (tile1.isCollidable() || tile2.isCollidable()) {
                 isMoveAvailable = false;
             } else {
                 for (Chest chest : chests) {
@@ -142,7 +145,9 @@ public class GameModel {
             int playerBottomTilesY = (int) (Math.floor(player.getY() + 1 + player.getVelocity() - player.getCollidableRectPaddingY()));
             int playerOccupiedTile1 = (int) Math.floor(player.getX() + player.getCollidableRectPaddingX());
             int playerOccupiedTile2 = (int) Math.floor(player.getX() + 1 - player.getCollidableRectPaddingX());
-            if (worldMap.getTile(playerOccupiedTile1, playerBottomTilesY).isCollidable() || worldMap.getTile(playerOccupiedTile2, playerBottomTilesY).isCollidable()) {
+            Tile tile1 = worldMap.getTile(playerOccupiedTile1, playerBottomTilesY);
+            Tile tile2 = worldMap.getTile(playerOccupiedTile2, playerBottomTilesY);
+            if (tile1.isCollidable() || tile2.isCollidable()) {
                 isMoveAvailable = false;
             } else {
                 for (Chest chest : chests) {
@@ -156,7 +161,9 @@ public class GameModel {
             int playerLeftTilesX = (int) (Math.floor(player.getX() - player.getVelocity() + player.getCollidableRectPaddingX()));
             int playerOccupiedTile1 = (int) Math.floor(player.getY() + player.getCollidableRectPaddingY());
             int playerOccupiedTile2 = (int) Math.floor(player.getY() + 1 - player.getCollidableRectPaddingY());
-            if (worldMap.getTile(playerLeftTilesX, playerOccupiedTile1).isCollidable() || worldMap.getTile(playerLeftTilesX, playerOccupiedTile2).isCollidable()) {
+            Tile tile1 = worldMap.getTile(playerLeftTilesX, playerOccupiedTile1);
+            Tile tile2 = worldMap.getTile(playerLeftTilesX, playerOccupiedTile2);
+            if (tile1.isCollidable() || tile2.isCollidable()) {
                 isMoveAvailable = false;
             } else {
                 for (Chest chest : chests) {
@@ -170,7 +177,9 @@ public class GameModel {
             int playerRightTilesX = (int) (Math.floor(player.getX() + 1 + player.getVelocity() - player.getCollidableRectPaddingX()));
             int playerOccupiedTile1 = (int) Math.floor(player.getY() + player.getCollidableRectPaddingY());
             int playerOccupiedTile2 = (int) Math.floor(player.getY() + 1 - player.getCollidableRectPaddingY());
-            if (worldMap.getTile(playerRightTilesX, playerOccupiedTile1).isCollidable() || worldMap.getTile(playerRightTilesX, playerOccupiedTile2).isCollidable()) {
+            Tile tile1 = worldMap.getTile(playerRightTilesX, playerOccupiedTile1);
+            Tile tile2 = worldMap.getTile(playerRightTilesX, playerOccupiedTile2);
+            if (tile1.isCollidable() || tile2.isCollidable()) {
                 isMoveAvailable = false;
             } else {
                 for (Chest chest : chests) {
