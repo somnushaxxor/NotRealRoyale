@@ -170,7 +170,7 @@ public class GraphicGameView implements GameView {
     private void drawUserInterface(Player clientPlayer) {
         if (clientPlayer != null) {
             graphicsContext.drawImage(hpImage, 1, 1);
-            graphicsContext.fillText(String.valueOf(clientPlayer.getHp()), hpImage.getWidth() + 1, font.getSize() + 1);
+            graphicsContext.fillText(String.format("%.2f", clientPlayer.getHp()), hpImage.getWidth() + 1, font.getSize() + 1);
             graphicsContext.fillText("LVL: " + clientPlayer.getRevolverLevel(), 1, 2 * font.getSize() + 4);
             graphicsContext.drawImage(healingSalveImage, 1, 2 * font.getSize() + 5);
             graphicsContext.fillText(": " + clientPlayer.getHealingSalvesNumber(), healingSalveImage.getWidth() + 1, 3 * font.getSize() + 6);

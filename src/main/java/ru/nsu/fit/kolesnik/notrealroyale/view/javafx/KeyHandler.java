@@ -7,6 +7,7 @@ import ru.nsu.fit.kolesnik.notrealroyale.controller.GameController;
 import ru.nsu.fit.kolesnik.notrealroyale.controller.Key;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KeyHandler {
     private final GraphicGameView view;
@@ -19,8 +20,14 @@ public class KeyHandler {
 
     public void start(GameController controller) {
         Scene scene = view.getScene();
+        AtomicBoolean isHandledKeyE = new AtomicBoolean(false);
         scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
-        scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
+        scene.setOnKeyReleased(event -> {
+            keys.put(event.getCode(), false);
+            if (event.getCode() == KeyCode.E) {
+                isHandledKeyE.set(false);
+            }
+        });
         scene.setOnMouseClicked(
                 event -> {
                     double mouseX = event.getX() - view.getScene().getWidth() / 2;
@@ -42,8 +49,9 @@ public class KeyHandler {
                 if (keys.getOrDefault(KeyCode.D, false)) {
                     controller.onKeyPressed(Key.D);
                 }
-                if (keys.getOrDefault(KeyCode.E, false)) {
+                if (keys.getOrDefault(KeyCode.E, false) && !isHandledKeyE.get()) {
                     controller.onKeyPressed(Key.E);
+                    isHandledKeyE.set(true);
                 }
             }
         };
