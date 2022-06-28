@@ -3,12 +3,6 @@ module ru.nsu.fit.kolesnik.notrealroyale {
     requires javafx.fxml;
     requires javafx.web;
 
-    requires org.controlsfx.controls;
-    requires com.dlsc.formsfx;
-    requires org.kordamp.ikonli.javafx;
-    requires org.kordamp.bootstrapfx.core;
-    requires eu.hansolo.tilesfx;
-
     opens ru.nsu.fit.kolesnik.notrealroyale to javafx.fxml;
     exports ru.nsu.fit.kolesnik.notrealroyale;
     exports ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
