@@ -33,12 +33,4 @@ public class Chest extends GameObject {
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
-
-    public double getHp() {
-        return hp;
-    }
-
-    public boolean isDamaged() {
-        return damaged;
-    }
 }

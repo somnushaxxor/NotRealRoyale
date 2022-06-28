@@ -1,12 +1,9 @@
 package ru.nsu.fit.kolesnik.notrealroyale;
 
-import javafx.scene.Scene;
-import ru.nsu.fit.kolesnik.notrealroyale.model.GameModel;
 import ru.nsu.fit.kolesnik.notrealroyale.networking.Server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Scanner;
 
 public class ServerApplication {
 

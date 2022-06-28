@@ -69,7 +69,7 @@ public class WorldMap {
         List<Chest> chests = new ArrayList<>();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (tiles[y][x] == Tile.SAND && Math.random() < 0.005) {
+                if (tiles[y][x] == Tile.SAND && Math.random() < 0.003) {
                     Chest chest = new Chest(x, y);
                     chests.add(chest);
                 }

@@ -4,7 +4,7 @@ import javafx.geometry.Point2D;
 
 import java.util.List;
 
-public class Enemy extends GameObject {
+public class Bot extends GameObject {
     private final static int WIDTH = 1;
     private final static int HEIGHT = 1;
     private final static double COLLIDABLE_RECT_PADDING_X = 0.1;
@@ -14,7 +14,7 @@ public class Enemy extends GameObject {
     private final double velocity;
     private boolean alive;
 
-    public Enemy(double x, double y) {
+    public Bot(double x, double y) {
         super(x, y, WIDTH, HEIGHT, COLLIDABLE_RECT_PADDING_X, COLLIDABLE_RECT_PADDING_Y);
         velocity = VELOCITY;
         alive = true;

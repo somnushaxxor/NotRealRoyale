@@ -2,42 +2,47 @@ package ru.nsu.fit.kolesnik.notrealroyale.controller;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class InetGameController implements GameController {
-    private final String clientName;
+    private final String clientUsername;
     private final ObjectOutputStream outputStream;
-    private final ExecutorService executorService;
 
-    public InetGameController(String clientName, ObjectOutputStream outputStream) {
-        this.clientName = clientName;
+    public InetGameController(String clientUsername, ObjectOutputStream outputStream) {
+        this.clientUsername = clientUsername;
         this.outputStream = outputStream;
-        executorService = Executors.newFixedThreadPool(1);
+    }
+
+    @Override
+    public void onKeyTyped(Key key) {
+        try {
+            if (key == Key.E) {
+                outputStream.writeUTF("HEAL " + clientUsername);
+            }
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onKeyPressed(Key key) {
-        Runnable runnable = () -> {
-            try {
-                switch (key) {
-                    case W -> outputStream.writeUTF("MOVED UP " + clientName);
-                    case S -> outputStream.writeUTF("MOVED DOWN " + clientName);
-                    case A -> outputStream.writeUTF("MOVED LEFT " + clientName);
-                    case D -> outputStream.writeUTF("MOVED RIGHT " + clientName);
-                }
-                outputStream.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            switch (key) {
+                case W -> outputStream.writeUTF("MOVED UP " + clientUsername);
+                case S -> outputStream.writeUTF("MOVED DOWN " + clientUsername);
+                case A -> outputStream.writeUTF("MOVED LEFT " + clientUsername);
+                case D -> outputStream.writeUTF("MOVED RIGHT " + clientUsername);
             }
-        };
-        executorService.execute(runnable);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onMouseClicked(double mouseX, double mouseY) {
         try {
-            outputStream.writeUTF("CLICKED " + mouseX + " " + mouseY + " " + clientName);
+            outputStream.writeUTF("CLICKED " + mouseX + " " + mouseY + " " + clientUsername);
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

@@ -22,7 +22,7 @@ public class GraphicGameView implements GameView {
     private final Canvas canvas;
     private final GraphicsContext graphicsContext;
 
-    private final String clientName;
+    private final String clientUsername;
     private double cameraX;
     private double cameraY;
 
@@ -37,8 +37,8 @@ public class GraphicGameView implements GameView {
     private final Image healingSalveImage = new Image("salve.png");
     private final Image boosterImage = new Image("booster.png");
 
-    public GraphicGameView(String clientName, Canvas canvas, Scene scene) {
-        this.clientName = clientName;
+    public GraphicGameView(String clientUsername, Canvas canvas, Scene scene) {
+        this.clientUsername = clientUsername;
         this.canvas = canvas;
         this.graphicsContext = canvas.getGraphicsContext2D();
         this.scene = scene;
@@ -57,7 +57,7 @@ public class GraphicGameView implements GameView {
     @Override
     public void drawFrame(WorldMap worldMap, List<Player> players, List<Chest> chests, List<Bullet> bullets, List<RevolverBooster> revolverBoosters, List<HealingSalve> healingSalves) {
         for (Player player : players) {
-            if (player.getName().equals(clientName)) {
+            if (player.getName().equals(clientUsername)) {
                 cameraX = player.getX();
                 cameraY = player.getY();
                 break;

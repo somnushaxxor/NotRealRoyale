@@ -2,7 +2,7 @@ package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
 public class Player extends GameObject {
     private final static double MAX_HP = 100;
-    private final static double VELOCITY = 0.05;
+    private final static double DEFAULT_VELOCITY = 0.05;
     private final static double WIDTH = 1;
     private final static double HEIGHT = 1;
     private final static double COLLIDABLE_RECT_PADDING_X = 0.15;
@@ -31,7 +31,7 @@ public class Player extends GameObject {
         revolverBulletMaxRange = DEFAULT_REVOLVER_BULLET_MAX_RANGE;
         revolverBulletSpeed = DEFAULT_REVOLVER_BULLET_SPEED;
         healingSalvesNumber = 0;
-        velocity = VELOCITY;
+        velocity = DEFAULT_VELOCITY;
         alive = true;
     }
 
@@ -70,7 +70,11 @@ public class Player extends GameObject {
 
     public void useHealingSalve() {
         if (healingSalvesNumber > 0) {
-            hp += HealingSalve.REGENERATABLE_HP;
+            if (hp < MAX_HP - HealingSalve.REGENERATABLE_HP) {
+                hp += HealingSalve.REGENERATABLE_HP;
+            } else {
+                hp = MAX_HP;
+            }
             healingSalvesNumber--;
         }
     }
@@ -99,10 +103,6 @@ public class Player extends GameObject {
 
     public double getRevolverBulletMaxRange() {
         return revolverBulletMaxRange;
-    }
-
-    public double getHp() {
-        return hp;
     }
 
     public double getVelocity() {

@@ -19,6 +19,11 @@ public class KeyHandler {
 
     public void start(GameController controller) {
         Scene scene = view.getScene();
+        scene.setOnKeyTyped(event -> {
+            if (event.getCode().equals(KeyCode.E)) {
+                controller.onKeyTyped(Key.E);
+            }
+        });
         scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
         scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
         scene.setOnMouseClicked(

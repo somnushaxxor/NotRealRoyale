@@ -217,6 +217,13 @@ public class GameModel {
         }
     }
 
+    public synchronized void healPlayer(String playerName) {
+        Player player = getPlayerByName(playerName);
+        if (player != null) {
+            player.useHealingSalve();
+        }
+    }
+
     public WorldMap getWorldMap() {
         return worldMap;
     }
