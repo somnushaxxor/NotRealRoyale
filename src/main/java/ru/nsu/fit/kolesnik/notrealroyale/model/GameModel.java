@@ -60,7 +60,7 @@ public class GameModel {
         for (Bullet bullet : bullets) {
             bullet.update();
             for (Player player : players) {
-                if (bullet.isColliding(player) && !bullet.getPlayer().equals(player)) {
+                if (player.isAlive() && bullet.isColliding(player) && !bullet.getPlayer().equals(player)) {
                     player.receiveDamage(bullet.getDamage());
                     if (!player.isAlive()) {
                         bullet.getPlayer().score();
@@ -68,7 +68,6 @@ public class GameModel {
                     bullet.setAlive(false);
                 }
             }
-            players.removeIf(player -> (!player.isAlive()));
             if (!bullet.isAlive()) {
                 continue;
             }
@@ -119,7 +118,7 @@ public class GameModel {
 
     public synchronized void movePlayerByDirection(Direction direction, String playerName) {
         Player player = getPlayerByName(playerName);
-        if (player == null) {
+        if (player == null || !player.isAlive()) {
             return;
         }
 

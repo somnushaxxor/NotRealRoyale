@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import ru.nsu.fit.kolesnik.notrealroyale.ClientApplication;
 import ru.nsu.fit.kolesnik.notrealroyale.exception.UnavailableUsernameException;
@@ -33,6 +34,8 @@ public class MainMenuController {
     @FXML
     private Button exitButton;
 
+    private final Image iconImage = new Image("images/icon.png");
+
     @FXML
     public void playButtonOnClick() {
         Stage mainMenuStage = (Stage) playButton.getScene().getWindow();
@@ -49,6 +52,7 @@ public class MainMenuController {
                 GraphicGameView view = new GraphicGameView(clientUsername, canvas, scene);
                 client.receiveMessagesFromServer(view);
                 gameSessionStage.setTitle("NotRealRoyale");
+                gameSessionStage.getIcons().add(iconImage);
                 gameSessionStage.setScene(scene);
                 gameSessionStage.setResizable(false);
                 gameSessionStage.setOnCloseRequest(event -> {

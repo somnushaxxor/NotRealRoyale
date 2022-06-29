@@ -17,7 +17,7 @@ public class WorldMap {
     public WorldMap(String mapName) {
         this.mapName = mapName;
         try {
-            InputStream mapInputStream = getClass().getClassLoader().getResourceAsStream(mapName + ".map");
+            InputStream mapInputStream = getClass().getClassLoader().getResourceAsStream("maps/" + mapName + ".map");
             if (mapInputStream == null) {
                 throw new RuntimeException("Can not open map file!");
             }

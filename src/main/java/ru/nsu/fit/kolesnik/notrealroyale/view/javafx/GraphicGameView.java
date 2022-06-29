@@ -7,6 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import ru.nsu.fit.kolesnik.notrealroyale.controller.GameController;
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.*;
 import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.Tile;
@@ -28,29 +29,29 @@ public class GraphicGameView implements GameView {
     private double cameraX;
     private double cameraY;
 
-    private final Image backgroundImage = new Image("background.jpg");
-    private final Image playerImage = new Image("player.png");
-    private final Image hpImage = new Image("hp.png");
-    private final Image sandImage = new Image("sand.png");
-    private final Image wallImage = new Image("wall.png");
-    private final Image rockImage = new Image("rock.png");
-    private final Image cactusImage = new Image("cactus.png");
-    private final Image bulletImage = new Image("bullet.png");
-    private final Image chestImage = new Image("chest.png");
-    private final Image healingSalveImage = new Image("salve.png");
-    private final Image boosterImage = new Image("booster.png");
+    private final Image backgroundImage = new Image("images/background.jpg");
+    private final Image playerImage = new Image("images/player.png");
+    private final Image hpImage = new Image("images/hp.png");
+    private final Image sandImage = new Image("images/sand.png");
+    private final Image wallImage = new Image("images/wall.png");
+    private final Image rockImage = new Image("images/rock.png");
+    private final Image cactusImage = new Image("images/cactus.png");
+    private final Image bulletImage = new Image("images/bullet.png");
+    private final Image chestImage = new Image("images/chest.png");
+    private final Image healingSalveImage = new Image("images/salve.png");
+    private final Image boosterImage = new Image("images/booster.png");
 
-    private final Font font;
+    private final Font userInterfaceFont;
+    private final Font gameSessionResultFont;
 
     public GraphicGameView(String clientUsername, Canvas canvas, Scene scene) {
         this.clientUsername = clientUsername;
         this.canvas = canvas;
         this.graphicsContext = canvas.getGraphicsContext2D();
         this.scene = scene;
-        scene.setCursor(new ImageCursor(new Image("cursor.png")));
-        graphicsContext.setFill(Color.WHITE);
-        font = new Font("Verdana", 24);
-        graphicsContext.setFont(font);
+        scene.setCursor(new ImageCursor(new Image("images/cursor.png")));
+        userInterfaceFont = new Font("Verdana", 24);
+        gameSessionResultFont = new Font("Verdana", 64);
     }
 
     public void startHandlingUserInput(GameController controller) {
@@ -81,8 +82,12 @@ public class GraphicGameView implements GameView {
         drawChests(chests);
         drawRevolverBoosters(revolverBoosters);
         drawHealingSalves(healingSalves);
-        drawPlayers(players);
-        drawUserInterface(clientPlayer);
+        drawAlivePlayers(players);
+        if (clientPlayer != null && clientPlayer.isAlive()) {
+            drawUserInterface(clientPlayer);
+        } else if (clientPlayer != null && !clientPlayer.isAlive()) {
+            drawGameSessionResult(clientPlayer);
+        }
     }
 
     private void drawBackground() {
@@ -115,11 +120,13 @@ public class GraphicGameView implements GameView {
         graphicsContext.drawImage(tileImage, getScreenX(tileX), getScreenY(tileY));
     }
 
-    private void drawPlayers(List<Player> players) {
+    private void drawAlivePlayers(List<Player> players) {
         for (Player player : players) {
-            double playerX = player.getX();
-            double playerY = player.getY();
-            graphicsContext.drawImage(playerImage, getScreenX(playerX), getScreenY(playerY));
+            if (player.isAlive()) {
+                double playerX = player.getX();
+                double playerY = player.getY();
+                graphicsContext.drawImage(playerImage, getScreenX(playerX), getScreenY(playerY));
+            }
         }
     }
 
@@ -168,14 +175,21 @@ public class GraphicGameView implements GameView {
     }
 
     private void drawUserInterface(Player clientPlayer) {
-        if (clientPlayer != null) {
-            graphicsContext.drawImage(hpImage, 1, 1);
-            graphicsContext.fillText(String.format("%.2f", clientPlayer.getHp()), hpImage.getWidth() + 1, font.getSize() + 1);
-            graphicsContext.fillText("LVL: " + clientPlayer.getRevolverLevel(), 1, 2 * font.getSize() + 4);
-            graphicsContext.drawImage(healingSalveImage, 1, 2 * font.getSize() + 5);
-            graphicsContext.fillText(": " + clientPlayer.getHealingSalvesNumber(), healingSalveImage.getWidth() + 1, 3 * font.getSize() + 6);
-            graphicsContext.fillText("SCORE: " + clientPlayer.getScore(), 1, 4 * font.getSize() + 8);
-        }
+        graphicsContext.setFont(userInterfaceFont);
+        graphicsContext.setFill(Color.WHITE);
+        graphicsContext.drawImage(hpImage, 1, 1);
+        graphicsContext.fillText(String.format("%.2f", clientPlayer.getHp()), hpImage.getWidth() + 1, userInterfaceFont.getSize() + 1);
+        graphicsContext.fillText("LVL: " + clientPlayer.getRevolverLevel(), 1, 2 * userInterfaceFont.getSize() + 4);
+        graphicsContext.drawImage(healingSalveImage, 1, 2 * userInterfaceFont.getSize() + 5);
+        graphicsContext.fillText(": " + clientPlayer.getHealingSalvesNumber(), healingSalveImage.getWidth() + 1, 3 * userInterfaceFont.getSize() + 6);
+        graphicsContext.fillText("SCORE: " + clientPlayer.getScore(), 1, 4 * userInterfaceFont.getSize() + 8);
+    }
+
+    private void drawGameSessionResult(Player clientPlayer) {
+        graphicsContext.setFont(gameSessionResultFont);
+        graphicsContext.setFill(Color.RED);
+        graphicsContext.fillText("GAME OVER", canvas.getWidth() / 2 - 200, canvas.getHeight() / 2);
+        graphicsContext.fillText("SCORE: " + clientPlayer.getScore(), canvas.getWidth() / 2 - 150, canvas.getHeight() / 2 + 100);
     }
 
     private double getScreenX(double modelX) {
