@@ -9,22 +9,18 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ClientHandler extends Thread {
+public class ClientHandler implements Runnable {
     private final Socket socket;
+    private final ObjectOutputStream outputStream;
+    private final ObjectInputStream inputStream;
     private final GameModel model;
     private InetSubscriber inetSubscriber;
-    private ObjectOutputStream outputStream;
-    private ObjectInputStream inputStream;
 
-    public ClientHandler(Socket socket, GameModel model) {
+    public ClientHandler(Socket socket, ObjectOutputStream outputStream, ObjectInputStream inputStream, GameModel model) {
         this.socket = socket;
+        this.outputStream = outputStream;
+        this.inputStream = inputStream;
         this.model = model;
-        try {
-            outputStream = new ObjectOutputStream(socket.getOutputStream());
-            inputStream = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -45,9 +41,11 @@ public class ClientHandler extends Thread {
                         }
                     }
                     if (!clientUsernameIsAlreadyInUse) {
-                        outputStream.writeUTF("OK");
-                        outputStream.writeUTF(model.getWorldMap().getMapName());
-                        outputStream.flush();
+                        synchronized (outputStream) {
+                            outputStream.writeUTF("OK");
+                            outputStream.writeUTF(model.getWorldMap().getMapName());
+                            outputStream.flush();
+                        }
                     } else {
                         outputStream.writeUTF("NAME ALREADY IN USE");
                         outputStream.flush();
@@ -79,12 +77,8 @@ public class ClientHandler extends Thread {
 
     private void stopHandlingClient() {
         try {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (outputStream != null) {
-                outputStream.close();
-            }
+            inputStream.close();
+            outputStream.close();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();

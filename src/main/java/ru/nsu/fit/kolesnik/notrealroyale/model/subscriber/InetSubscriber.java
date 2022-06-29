@@ -24,14 +24,16 @@ public class InetSubscriber implements Subscriber {
     @Override
     public void update() {
         try {
-            outputStream.writeUTF("UPDATE");
-            outputStream.writeObject(model.getPlayers());
-            outputStream.writeObject(model.getChests());
-            outputStream.writeObject(model.getBullets());
-            outputStream.writeObject(model.getRevolverBoosters());
-            outputStream.writeObject(model.getHealingSalves());
-            outputStream.flush();
-            outputStream.reset();
+            synchronized (outputStream) {
+                outputStream.writeUTF("UPDATE");
+                outputStream.writeObject(model.getPlayers());
+                outputStream.writeObject(model.getChests());
+                outputStream.writeObject(model.getBullets());
+                outputStream.writeObject(model.getRevolverBoosters());
+                outputStream.writeObject(model.getHealingSalves());
+                outputStream.flush();
+                outputStream.reset();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

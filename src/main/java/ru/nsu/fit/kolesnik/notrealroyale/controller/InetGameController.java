@@ -13,7 +13,7 @@ public class InetGameController implements GameController {
     }
 
     @Override
-    public void onKeyPressed(Key key) {
+    public synchronized void onKeyPressed(Key key) {
         try {
             switch (key) {
                 case W -> outputStream.writeUTF("MOVED UP " + clientUsername);
@@ -29,7 +29,7 @@ public class InetGameController implements GameController {
     }
 
     @Override
-    public void onMouseClicked(double mouseX, double mouseY) {
+    public synchronized void onMouseClicked(double mouseX, double mouseY) {
         try {
             outputStream.writeUTF("CLICKED " + mouseX + " " + mouseY + " " + clientUsername);
             outputStream.flush();

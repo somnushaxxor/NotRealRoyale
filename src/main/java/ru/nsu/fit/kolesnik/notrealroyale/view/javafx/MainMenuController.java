@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import ru.nsu.fit.kolesnik.notrealroyale.ClientApplication;
+import ru.nsu.fit.kolesnik.notrealroyale.exception.ServerIsFullException;
 import ru.nsu.fit.kolesnik.notrealroyale.exception.UnavailableUsernameException;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class MainMenuController {
     private final String UNKNOWN_HOST_EXCEPTION_LABEL_TEXT = "IP adress of the server can not be determined!";
     private final String IO_EXCEPTION_LABEL_TEXT = "Can not connect to server!";
     private final String UNAVAILABLE_USERNAME_EXCEPTION_LABEL_TEXT = "Username is already taken!";
+    private final String SERVER_IS_FULL_EXCEPTION_LABEL_TEXT = "Server is full!";
     @FXML
     public TextField usernameTextField;
     @FXML
@@ -75,6 +77,9 @@ public class MainMenuController {
                 e.printStackTrace();
                 errorMessageLabel.setText(UNAVAILABLE_USERNAME_EXCEPTION_LABEL_TEXT);
                 usernameTextField.clear();
+            } catch (ServerIsFullException e) {
+                e.printStackTrace();
+                errorMessageLabel.setText(SERVER_IS_FULL_EXCEPTION_LABEL_TEXT);
             }
         }
     }

@@ -2,6 +2,7 @@ package ru.nsu.fit.kolesnik.notrealroyale.networking;
 
 import javafx.application.Platform;
 import ru.nsu.fit.kolesnik.notrealroyale.controller.InetGameController;
+import ru.nsu.fit.kolesnik.notrealroyale.exception.ServerIsFullException;
 import ru.nsu.fit.kolesnik.notrealroyale.exception.UnavailableUsernameException;
 import ru.nsu.fit.kolesnik.notrealroyale.model.gameobject.*;
 import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.WorldMap;
@@ -27,21 +28,33 @@ public class Client {
         System.out.println("Client created!");
     }
 
-    public void joinGameSession(Socket socket, String clientUsername) throws UnavailableUsernameException, IOException {
+    public void joinGameSession(Socket socket, String clientUsername) throws UnavailableUsernameException, IOException, ServerIsFullException {
         this.socket = socket;
         this.clientUsername = clientUsername;
-        outputStream = new ObjectOutputStream(socket.getOutputStream());
-        inputStream = new ObjectInputStream(socket.getInputStream());
-        outputStream.writeUTF("JOIN " + clientUsername);
-        outputStream.flush();
-        String joinRequestAnswer = inputStream.readUTF();
-        if (joinRequestAnswer.equals("OK")) {
-            this.clientUsername = clientUsername;
-            String mapName = inputStream.readUTF();
-            worldMap = new WorldMap(mapName);
+        try {
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            inputStream = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+            closeConnectionToServer();
+            throw new IOException();
+        }
+        String serverStateAnswer = inputStream.readUTF();
+        if (serverStateAnswer.equals("OK")) {
+            outputStream.writeUTF("JOIN " + clientUsername);
+            outputStream.flush();
+            String joinRequestAnswer = inputStream.readUTF();
+            if (joinRequestAnswer.equals("OK")) {
+                this.clientUsername = clientUsername;
+                String mapName = inputStream.readUTF();
+                worldMap = new WorldMap(mapName);
+            } else {
+                closeConnectionToServer();
+                throw new UnavailableUsernameException("Username " + clientUsername + " is already taken!");
+            }
         } else {
             closeConnectionToServer();
-            throw new UnavailableUsernameException("Username " + clientUsername + " is already taken!");
+            throw new ServerIsFullException("Try to join later!");
         }
     }
 
