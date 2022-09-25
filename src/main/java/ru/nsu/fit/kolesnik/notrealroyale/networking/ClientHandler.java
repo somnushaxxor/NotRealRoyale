@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
+
     private final Socket socket;
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
@@ -84,4 +85,5 @@ public class ClientHandler implements Runnable {
             e.printStackTrace();
         }
     }
+
 }

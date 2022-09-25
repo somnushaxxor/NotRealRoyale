@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public class InetGameController implements GameController {
+
     private final String clientUsername;
     private final ObjectOutputStream outputStream;
 
@@ -37,4 +38,5 @@ public class InetGameController implements GameController {
             e.printStackTrace();
         }
     }
+
 }

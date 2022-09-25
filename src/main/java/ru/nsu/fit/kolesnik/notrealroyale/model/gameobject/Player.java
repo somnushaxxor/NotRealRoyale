@@ -1,6 +1,7 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
 public class Player extends GameObject {
+
     private final static double MAX_HP = 100;
     private final static double DEFAULT_VELOCITY = 0.05;
     private final static double WIDTH = 1;
@@ -135,4 +136,5 @@ public class Player extends GameObject {
     public int getScore() {
         return score;
     }
+
 }

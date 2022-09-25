@@ -3,6 +3,7 @@ package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 import java.io.Serializable;
 
 public class GameObject implements Serializable {
+
     private double x;
     private double y;
     private final double width;
@@ -20,13 +21,10 @@ public class GameObject implements Serializable {
     }
 
     public boolean isColliding(GameObject other) {
-        if (getX() + getCollidableRectPaddingX() < other.getX() + other.getWidth() - other.getCollidableRectPaddingX() &&
+        return getX() + getCollidableRectPaddingX() < other.getX() + other.getWidth() - other.getCollidableRectPaddingX() &&
                 getX() + getWidth() - getCollidableRectPaddingX() > other.getX() + other.getCollidableRectPaddingX() &&
                 getY() + getCollidableRectPaddingY() < other.getY() + other.getHeight() - other.getCollidableRectPaddingY() &&
-                getY() + getHeight() - getCollidableRectPaddingY() > other.getY() + other.getCollidableRectPaddingY()) {
-            return true;
-        }
-        return false;
+                getY() + getHeight() - getCollidableRectPaddingY() > other.getY() + other.getCollidableRectPaddingY();
     }
 
     public double getX() {
@@ -60,4 +58,5 @@ public class GameObject implements Serializable {
     public double getCollidableRectPaddingY() {
         return collidableRectPaddingY;
     }
+
 }

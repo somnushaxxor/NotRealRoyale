@@ -3,6 +3,7 @@ package ru.nsu.fit.kolesnik.notrealroyale.thread;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class WorkerThread extends Thread {
+
     private final LinkedBlockingQueue<Runnable> queue;
     private boolean isFree;
 
@@ -33,4 +34,5 @@ public class WorkerThread extends Thread {
     public boolean isFree() {
         return isFree;
     }
+
 }

@@ -3,6 +3,7 @@ package ru.nsu.fit.kolesnik.notrealroyale.thread;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ThreadPool {
+
     private final int poolSize;
     private final WorkerThread[] workers;
     private final LinkedBlockingQueue<Runnable> queue;
@@ -40,4 +41,5 @@ public class ThreadPool {
             workers[i] = null;
         }
     }
+
 }

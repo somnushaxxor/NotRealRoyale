@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 public class ServerApplication {
+
     public static final int PORT = 12000;
     public static final int SERVER_MAX_CLIENTS_NUMBER = 5;
 
@@ -18,4 +19,5 @@ public class ServerApplication {
             e.printStackTrace();
         }
     }
+
 }

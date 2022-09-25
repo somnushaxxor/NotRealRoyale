@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KeyHandler {
+
     private final GraphicGameView view;
     private final HashMap<KeyCode, Boolean> keys;
 
@@ -57,4 +58,5 @@ public class KeyHandler {
         };
         timer.start();
     }
+
 }

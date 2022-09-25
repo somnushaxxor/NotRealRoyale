@@ -5,6 +5,7 @@ import javafx.geometry.Point2D;
 import java.util.List;
 
 public class Bot extends GameObject {
+
     private final static int WIDTH = 1;
     private final static int HEIGHT = 1;
     private final static double COLLIDABLE_RECT_PADDING_X = 0.1;
@@ -64,4 +65,5 @@ public class Bot extends GameObject {
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
+
 }

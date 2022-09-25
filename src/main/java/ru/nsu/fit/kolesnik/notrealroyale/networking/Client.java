@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.util.List;
 
 public class Client {
+
     private Socket socket;
     private String clientUsername;
     private ObjectOutputStream outputStream;
@@ -107,4 +108,5 @@ public class Client {
         }
         System.out.println("Client closed connection to the server!");
     }
+
 }

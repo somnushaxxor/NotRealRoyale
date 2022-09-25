@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 
 public class ClientApplication extends Application {
+
     public static final int PORT = 12000;
     public static Client client;
 
@@ -41,4 +42,5 @@ public class ClientApplication extends Application {
             e.printStackTrace();
         }
     }
+
 }

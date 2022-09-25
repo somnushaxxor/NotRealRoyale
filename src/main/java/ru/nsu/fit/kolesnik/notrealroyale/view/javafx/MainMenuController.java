@@ -21,6 +21,7 @@ import java.net.UnknownHostException;
 import static ru.nsu.fit.kolesnik.notrealroyale.ClientApplication.client;
 
 public class MainMenuController {
+
     private final String UNKNOWN_HOST_EXCEPTION_LABEL_TEXT = "IP adress of the server can not be determined!";
     private final String IO_EXCEPTION_LABEL_TEXT = "Can not connect to server!";
     private final String UNAVAILABLE_USERNAME_EXCEPTION_LABEL_TEXT = "Username is already taken!";
@@ -89,4 +90,5 @@ public class MainMenuController {
         Stage mainMenuStage = (Stage) exitButton.getScene().getWindow();
         mainMenuStage.close();
     }
+
 }

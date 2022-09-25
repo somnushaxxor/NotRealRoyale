@@ -1,6 +1,7 @@
 package ru.nsu.fit.kolesnik.notrealroyale.model.gameobject;
 
 public class Bullet extends GameObject {
+
     private final static double WIDTH = 1;
     private final static double HEIGHT = 1;
     private final static double COLLIDABLE_RECT_PADDING_X = 0.30;
@@ -63,4 +64,5 @@ public class Bullet extends GameObject {
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
+
 }

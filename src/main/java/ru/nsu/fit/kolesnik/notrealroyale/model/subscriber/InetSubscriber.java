@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public class InetSubscriber implements Subscriber {
+
     private final String name;
     private final GameModel model;
     private final ObjectOutputStream outputStream;
@@ -38,4 +39,5 @@ public class InetSubscriber implements Subscriber {
             e.printStackTrace();
         }
     }
+
 }

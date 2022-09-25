@@ -1,7 +1,6 @@
 module ru.nsu.fit.kolesnik.notrealroyale {
     requires javafx.controls;
     requires javafx.fxml;
-    requires javafx.web;
 
     opens ru.nsu.fit.kolesnik.notrealroyale to javafx.fxml;
     exports ru.nsu.fit.kolesnik.notrealroyale;
@@ -19,4 +18,5 @@ module ru.nsu.fit.kolesnik.notrealroyale {
     opens ru.nsu.fit.kolesnik.notrealroyale.model.worldmap to javafx.fxml;
     exports ru.nsu.fit.kolesnik.notrealroyale.model.subscriber;
     opens ru.nsu.fit.kolesnik.notrealroyale.model.subscriber to javafx.fxml;
+    exports ru.nsu.fit.kolesnik.notrealroyale.networking;
 }

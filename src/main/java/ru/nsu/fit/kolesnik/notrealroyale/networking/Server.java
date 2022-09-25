@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
+
     private final ServerSocket serverSocket;
     private final GameModel model;
     private final ThreadPool threadPool;
@@ -61,5 +62,6 @@ public class Server {
             e.printStackTrace();
         }
     }
+
 }
 

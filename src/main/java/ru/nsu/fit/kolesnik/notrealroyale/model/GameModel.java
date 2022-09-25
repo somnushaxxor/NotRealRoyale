@@ -8,6 +8,7 @@ import ru.nsu.fit.kolesnik.notrealroyale.model.worldmap.WorldMap;
 import java.util.*;
 
 public class GameModel {
+
     private final static String MAP_NAME = "default";
 
     private final HashMap<String, Subscriber> subscribers;
@@ -264,4 +265,5 @@ public class GameModel {
         }
         return null;
     }
+
 }

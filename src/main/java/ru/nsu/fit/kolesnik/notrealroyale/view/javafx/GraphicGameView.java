@@ -16,6 +16,7 @@ import ru.nsu.fit.kolesnik.notrealroyale.view.GameView;
 import java.util.List;
 
 public class GraphicGameView implements GameView {
+
     public static final double GAME_WINDOW_WIDTH = 1120;
     public static final double GAME_WINDOW_HEIGHT = 736;
     private static final double DEFAULT_MODEL_UNIT_SIZE = 32;
@@ -198,4 +199,5 @@ public class GraphicGameView implements GameView {
     private double getScreenY(double modelY) {
         return (modelY - cameraY) * DEFAULT_MODEL_UNIT_SIZE + canvas.getHeight() / 2;
     }
+
 }
